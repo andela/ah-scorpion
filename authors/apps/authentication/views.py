@@ -32,7 +32,6 @@ class RegistrationAPIView(APIView):
         token = generate_token(serializer.data).decode()
         output = serializer.data
         output['token'] = token
-        print(output)
         return Response(output,
                         status=status.HTTP_201_CREATED)
 
@@ -55,7 +54,6 @@ class LoginAPIView(APIView):
         token = generate_token(serializer.data).decode()
         output = serializer.data
         output['token'] = token
-        print(output)
         return Response(output, status=status.HTTP_200_OK)
 
 
