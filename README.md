@@ -391,6 +391,8 @@ No additional parameters required
 
 `GET /api/tags`
 
+### Configuring environment variables
 
-
-
+* See the env-sample file for the required environment variables needed to setup the application
+* Use this info to create a .env file
+* Run `source .env` to initialize the environment variables
