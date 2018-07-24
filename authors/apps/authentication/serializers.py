@@ -1,8 +1,15 @@
 from django.contrib.auth import authenticate
-
+import re
 from rest_framework import serializers
-
+from rest_framework.validators import UniqueValidator
 from .models import User
+
+
+def email_validator(email):
+    regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    if not re.match(regex, email):
+        raise serializers.ValidationError("Your email format is invalid, Please enter the correct email")
+    return email
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -13,8 +20,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
         min_length=8,
-        write_only=True
+        write_only=True, validators=[]
     )
+    email = serializers.EmailField(unique=True,
+                                   max_length=30,
+                                   validators=[UniqueValidator(
+                                    queryset=User.objects.all(),
+                                    message="Email already exists, please login instead"), email_validator],
+                                   )
 
     # The client should not be able to send a token along with a registration
     # request. Making `token` read-only handles that for us.
@@ -24,6 +37,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
         fields = ['email', 'username', 'password']
+
+
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
