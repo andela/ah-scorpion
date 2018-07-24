@@ -1,9 +1,11 @@
+import jwt
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from authors.settings import SECRET_KEY
 from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
@@ -26,7 +28,13 @@ class RegistrationAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # generate token
+        token = generate_token(serializer.data).decode()
+        output = serializer.data
+        output['token'] = token
+        print(output)
+        return Response(output,
+                        status=status.HTTP_201_CREATED)
 
 
 class LoginAPIView(APIView):
@@ -44,7 +52,21 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        token = generate_token(serializer.data).decode()
+        output = serializer.data
+        output['token'] = token
+        print(output)
+        return Response(output, status=status.HTTP_200_OK)
+
+
+def generate_token(identity):
+    """
+    Method that generates a JSON Web Token for the user
+    :param identity: Information to be encoded
+    :return: JWT token
+    """
+    token = jwt.encode(identity, SECRET_KEY)
+    return token
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
