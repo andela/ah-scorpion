@@ -1,26 +1,24 @@
-# import jwt
-#
-# from django.conf import settings
-#
-# from rest_framework import authentication, exceptions
-#
-# from .models import User
+import jwt
+from django.conf import settings
+from rest_framework import authentication, exceptions
+
+from .models import User
 
 """Configure JWT Here"""
 
 
-class JWTAuthentication:
-    @staticmethod
-    def authenticate(request):
-        """
-        To Implement authentication of received JWT
-        :param request:
-        :return:
-        """
-        pass
+class JWTAuthentication(authentication.TokenAuthentication):
 
-    @staticmethod
-    def authenticate_header(request):
-        pass
+    def authenticate(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+        if token is None:
+            return None
 
-    pass
+        identity = jwt.decode(token, settings.SECRET_KEY)
+        user = None
+        try:
+            user = User.objects.get(username=identity['username'])
+        except User.DoesNotExist:
+            exceptions.AuthenticationFailed('No such user')
+
+        return user, None
