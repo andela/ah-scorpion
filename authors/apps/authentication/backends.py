@@ -4,21 +4,39 @@ from rest_framework import authentication, exceptions
 
 from .models import User
 
-"""Configure JWT Here"""
-
 
 class JWTAuthentication(authentication.TokenAuthentication):
+    """
+    Authenticate a received token from the 'Authorization' Header prepended by
+    the keyword 'Bearer'
 
-    def authenticate(self, request):
-        token = request.META.get('HTTP_AUTHORIZATION')
-        if token is None:
-            return None
+    Example
+     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
+                            eyJpZGVudGl0eSI6eyJlbWFpbCI6ImRhdmVtYXRoZXdzQGdtYWls
+                            LmNvbSIsInVzZXJuYW1lIjoiZGF2ZW1hdGhld3MifSwiaWF0Ijox
+                            NTMyNDkyMjM2LCJleHAiOjE1MzI0OTIyNjZ9.
+    """
+    keyword = 'Bearer'
 
-        identity = jwt.decode(token, settings.SECRET_KEY)
-        user = None
+    def authenticate_credentials(self, token: str):
+        """
+        Check if the token is valid then authenticate the user
+        :param token: the token as a string
+        :return: Tuple of the user object and non-user authentication
+        information
+        :rtype: tuple
+        """
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+        except jwt.exceptions.ExpiredSignatureError:
+            raise exceptions.AuthenticationFailed('Expired Token.')
+        except jwt.exceptions.InvalidTokenError:
+            raise exceptions.AuthenticationFailed('Invalid token')
+
+        identity = payload['identity']
         try:
             user = User.objects.get(username=identity['username'])
         except User.DoesNotExist:
-            exceptions.AuthenticationFailed('No such user')
+            return None, None
 
         return user, None
