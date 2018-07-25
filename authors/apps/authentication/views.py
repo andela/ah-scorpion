@@ -1,3 +1,5 @@
+import datetime
+
 import jwt
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -57,14 +59,18 @@ class LoginAPIView(APIView):
         return Response(output, status=status.HTTP_200_OK)
 
 
-def generate_token(identity):
+def generate_token(identity: dict):
     """
     Method that generates a JSON Web Token for the user
-    :param identity: Information to be encoded
+    :param identity: User information to be encoded as a dictionary
     :return: JWT token
+    :rtype: bytes
     """
-    token = jwt.encode(identity, SECRET_KEY)
-    return token
+    payload = dict(identity=identity,
+                   iat=datetime.datetime.utcnow(),
+                   exp=datetime.datetime.utcnow() + datetime.timedelta(
+                       days=1))
+    return jwt.encode(payload, SECRET_KEY)
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
