@@ -12,7 +12,7 @@ class UserJSONRenderer(JSONRenderer):
         # the default JSONRenderer to handle rendering errors, so we need to
         # check for this case.
         errors = data.get('errors', None)
-        print(errors)
+
 
         if errors is not None:
             # As mentioned about, we will let the default JSONRenderer handle
