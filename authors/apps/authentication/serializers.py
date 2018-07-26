@@ -27,13 +27,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
         max_length=30,
         validators=[UniqueValidator(
             queryset=User.objects.all(),
-            message="Email already exists, please login instead")],
+            message="Email already exists, please login or use a different email")],
     )
     username = serializers.CharField(
         max_length=30,
         validators=[UniqueValidator(
             queryset=User.objects.all(),
-            message="Username already exists, please enter another one")],
+            message="Username already exists, please enter a different username")],
     )
 
     # The client should not be able to send a token along with a registration
