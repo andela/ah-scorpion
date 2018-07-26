@@ -45,9 +45,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # or response, including fields specified explicitly above.
         fields = ['email', 'username', 'password']
 
-
-
-
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
         return User.objects.create_user(**validated_data)
@@ -57,7 +54,6 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(max_length=128, write_only=True)
-
 
     def validate(self, data):
         # The `validate` method is where we make sure that the current
@@ -138,7 +134,6 @@ class UserSerializer(serializers.ModelSerializer):
         # password field, we needed to specify the `min_length` and 
         # `max_length` properties too, but that isn't the case for the token
         # field.
-
 
     def update(self, instance, validated_data):
         """Performs an update on a User."""
