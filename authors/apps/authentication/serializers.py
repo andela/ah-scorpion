@@ -24,11 +24,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         write_only=True, validators=[password_validator]
     )
     email = serializers.EmailField(
-                                   max_length=30,
-                                   validators=[UniqueValidator(
-                                    queryset=User.objects.all(),
-                                    message="Email already exists, please login instead")],
-                                   )
+        max_length=30,
+        validators=[UniqueValidator(
+            queryset=User.objects.all(),
+            message="Email already exists, please login instead")],
+    )
     username = serializers.CharField(
         max_length=30,
         validators=[UniqueValidator(
