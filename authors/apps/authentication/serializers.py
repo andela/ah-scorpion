@@ -1,8 +1,16 @@
 from django.contrib.auth import authenticate
-
+import re
 from rest_framework import serializers
-
+from rest_framework.validators import UniqueValidator
 from .models import User
+
+
+def password_validator(password):
+    password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)" r"(?=.*[a-z])(?!.*\s).*$")
+    if not bool(password_pattern.match(password)):
+        raise serializers.ValidationError("Password invalid, Password must be 8 characters long, "
+                                          "include numbers and letters and have no spaces");
+    return password
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -13,7 +21,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
         min_length=8,
-        write_only=True
+        write_only=True, validators=[password_validator]
+    )
+    email = serializers.EmailField(
+        max_length=30,
+        validators=[UniqueValidator(
+            queryset=User.objects.all(),
+            message="Email already exists, please login or use a different email")],
+    )
+    username = serializers.CharField(
+        max_length=30,
+        validators=[UniqueValidator(
+            queryset=User.objects.all(),
+            message="Username already exists, please enter a different username")],
     )
 
     # The client should not be able to send a token along with a registration
@@ -34,7 +54,6 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(max_length=128, write_only=True)
-
 
     def validate(self, data):
         # The `validate` method is where we make sure that the current
@@ -115,7 +134,6 @@ class UserSerializer(serializers.ModelSerializer):
         # password field, we needed to specify the `min_length` and 
         # `max_length` properties too, but that isn't the case for the token
         # field.
-
 
     def update(self, instance, validated_data):
         """Performs an update on a User."""
