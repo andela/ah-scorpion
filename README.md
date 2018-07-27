@@ -8,6 +8,11 @@ Create a community of like minded authors to foster inspiration and innovation
 by leveraging the modern web.
 
 ---
+## Mockup links
+
+[Landing Page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/)
+
+[Dashboard Page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/dashboard.html)
 
 ## API Spec
 The preferred JSON object to be returned by the API should be structured as follows:
