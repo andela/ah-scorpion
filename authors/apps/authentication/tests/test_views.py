@@ -37,6 +37,7 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
             response.data['errors']['username'][0], "This field may not be blank.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_register_empty_user_name(self):
         """
@@ -46,6 +47,7 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
             response.data['errors']['username'][0], "This field may not be blank.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_weak_password(self):
         """
@@ -54,9 +56,9 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['password'] = "1234"
         response = self.client.post(self.reg_url, self.data, format='json')
-        print(response.data['errors']['password'][0])
         self.assertEqual(response.data['errors']['password'][0],
                          "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_email_wrong_format(self):
         """
@@ -66,3 +68,38 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.data['errors']['email']
                          [0], "Enter a valid email address.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_empty_email(self):
+        """
+        Test that the user does not enter an empty email
+        """
+        self.data['user']['email'] = ""
+        response = self.client.post(self.reg_url, self.data, format='json')
+        self.assertEqual(response.data['errors']['email']
+                         [0], "This field may not be blank.")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_existing_user(self):
+        """
+        Test that an already registered user cannot register again
+        """
+        test_user = {
+            "user": {
+                "username": "Jacob",
+                "email": "jake@jake.jake",
+                "password": "jakejake23"
+            }
+        }
+        response = self.client.post(
+            self.reg_url, test_user, format='json')
+        # Register the user a second time
+        response = self.client.post(
+            self.reg_url, test_user, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_user(self):
+        """
+        Test that a user can login
+        """
+        pass
