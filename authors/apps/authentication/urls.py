@@ -8,9 +8,9 @@ from .views import (
 app_name = "authentication"
 
 urlpatterns = [
-    url(r'^user/?$', UserRetrieveUpdateAPIView.as_view()),
-    url(r'^users/?$', RegistrationAPIView.as_view()),
-    url(r'^users/login/?$', LoginAPIView.as_view()),
+    url(r'^users/?$', RegistrationAPIView.as_view(), name='reg'),
+    url(r'^users/login/?$', LoginAPIView.as_view(), name='login'),
+    url(r'^user/?$', UserRetrieveUpdateAPIView.as_view(), name='current_user'),
     url(r'^activate/(?P<token>.+?)$',
         account_activator.activate,
         name='activate'),
