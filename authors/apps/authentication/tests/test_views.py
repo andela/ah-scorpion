@@ -18,6 +18,7 @@ class AuthenticationTests(APITestCase):
         }
         # Set up the registration url.
         self.reg_url = reverse('authentication:reg')
+        self.login_url = reverse('authentication:login')
 
     def test_register_user(self):
         """
@@ -102,4 +103,60 @@ class AuthenticationTests(APITestCase):
         """
         Test that a user can login
         """
-        pass
+        # Register a user
+        response = self.client.post(self.reg_url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Login the user
+        login_response = self.client.post(self.login_url, {
+            "user": {
+                "email": "jake@jake.jake",
+                "password": "jakejake23"
+            }
+        }, format='json')
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+
+    def test_login_user_wrong_email_and_password(self):
+        """
+        Test that you cannot login a user with the wrong email and password
+        """
+        # Register a user
+        response = self.client.post(
+            self.reg_url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Login the user with wrong email
+        login_response = self.client.post(self.login_url, {
+            "user": {
+                "email": "jake@.jake",
+                "password": "jakejake23"
+            }
+        }, format='json')
+        self.assertEqual(login_response.data['errors']['error'][0],
+                         'A user with this email and password was not found.')
+        self.assertEqual(login_response.status_code,
+                         status.HTTP_400_BAD_REQUEST)
+        # Login the user with wrong password
+        login_password_response = self.client.post(self.login_url, {
+            "user": {
+                "email": "jake@.jake",
+                "password": "jake"
+            }
+        }, format='json')
+        self.assertEqual(login_password_response.data['errors']['error'][0],
+                         'A user with this email and password was not found.')
+        self.assertEqual(login_password_response.status_code,
+                         status.HTTP_400_BAD_REQUEST)
+
+    def test_login_user_not_registered(self):
+        """
+        Test that a user who is not registered cannot login
+        """
+        login_response = self.client.post(self.login_url, {
+            "user": {
+                "email": "jake@.jake",
+                "password": "jakejake23"
+            }
+        }, format='json')
+        self.assertEqual(login_response.data['errors']['error'][0],
+                         'A user with this email and password was not found.')
+        self.assertEqual(login_response.status_code,
+                         status.HTTP_400_BAD_REQUEST)
