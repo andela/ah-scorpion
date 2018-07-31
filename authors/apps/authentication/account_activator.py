@@ -1,25 +1,11 @@
-import jwt
-from django.contrib.auth.models import User as SuperUser
 from django.http import HttpResponse
-from rest_framework import exceptions
-
-from authors import settings
-from .models import User
+from authors.apps.authentication.backends import JWTAuthentication
 
 
 def activate(request, token):
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY)
-        email_address = payload['identity']
-    except jwt.exceptions.ExpiredSignatureError:
-        raise exceptions.AuthenticationFailed('Expired Token.')
-    except jwt.exceptions.InvalidTokenError:
-        raise exceptions.AuthenticationFailed('Invalid token')
-
-    try:
-        user = User.objects.get(email=email_address)
-    except(TypeError, ValueError, OverflowError, SuperUser.DoesNotExist):
-        user = None
+    jwt_authentication = JWTAuthentication()
+    identity = jwt_authentication.authenticate_credentials(token)
+    user = identity[0]
 
     if user is not None:
         # Check is the account is already active
@@ -31,5 +17,6 @@ def activate(request, token):
         return HttpResponse(
             'Thank you for confirming your email address. '
             'Welcome to Authors\' Haven.')
+    # User is not found
     else:
         return HttpResponse('Activation link is invalid!')
