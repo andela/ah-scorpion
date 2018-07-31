@@ -37,7 +37,7 @@ class RegistrationAPIView(APIView):
         message = render_to_string('verification_email.html', {
             'user': user,
             'domain': current_site.domain,
-            'token': generate_token(user['email']).decode(),
+            'token': generate_token(user).decode(),
         })
         to_email = serializer.data.get("email")
         co_name = EMAIL_HOST_NAME
