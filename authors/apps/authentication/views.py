@@ -9,6 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from authors.apps.authentication.models import User
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer
 from .serializers import (
@@ -48,18 +49,14 @@ class RegistrationAPIView(APIView):
         email.send()
 
         output = serializer.data
-<<<<<<< HEAD
         output['message'] = 'Please confirm your email address to complete ' \
                             'the registration '
-=======
-        output['token'] = token
 
         # now that a user has been created and saved, the serializer's
         # instance attribute will be the created User object so we can get
         # the bio and image from it.
         output['bio'] = serializer.instance.bio
         output['image'] = serializer.instance.image
->>>>>>> [feature #159053985] User Profile
         return Response(output,
                         status=status.HTTP_201_CREATED)
 
@@ -109,6 +106,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
         # There is nothing to validate or save here. Instead, we just want the
