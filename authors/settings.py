@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ['SCORPION_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'authors.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ["NAME"],
-        'USER': os.environ["USER"],
-        'PASSWORD': os.environ["PASSWORD"],
-        'HOST': os.environ["HOST"],
-        'PORT': os.environ["PORT"],
+        'NAME': os.environ["SCORPION_DB_NAME"],
+        'USER': os.environ["SCORPION_DB_USER"],
+        'PASSWORD': os.environ["SCORPION_DB_PASSWORD"],
+        'HOST': os.environ["SCORPION_DB_HOST"],
+        'PORT': os.environ["SCORPION_DB_PORT"],
     }
 }
 
@@ -145,3 +145,10 @@ REST_FRAMEWORK = {
         'authors.apps.authentication.backends.JWTAuthentication',
     ),
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ['SCORPION_EMAIL_SMTP_HOST']
+EMAIL_HOST_USER = os.environ['SCORPION_EMAIL_HOST_USER']
+EMAIL_HOST_NAME = os.environ['SCORPION_EMAIL_HOST_NAME']
+EMAIL_HOST_PASSWORD = os.environ['SCORPION_EMAIL_HOST_PASSWORD']
+EMAIL_PORT = os.environ['SCORPION_EMAIL_PORT']

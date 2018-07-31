@@ -1,13 +1,15 @@
 import datetime
-
 import jwt
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from authors.settings import SECRET_KEY
+from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
@@ -30,10 +32,24 @@ class RegistrationAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        # generate token
-        token = generate_token(serializer.data).decode()
+        current_site = get_current_site(request)
+        mail_subject = "Activate Authors' Haven account."
+        message = render_to_string('verification_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'token': generate_token(user).decode(),
+        })
+        to_email = serializer.data.get("email")
+        co_name = EMAIL_HOST_NAME
+
+        email = EmailMessage(
+            mail_subject, message, from_email=co_name, to=[to_email]
+        )
+        email.send()
+
         output = serializer.data
-        output['token'] = token
+        output['message'] = 'Please confirm your email address to complete ' \
+                            'the registration '
         return Response(output,
                         status=status.HTTP_201_CREATED)
 
