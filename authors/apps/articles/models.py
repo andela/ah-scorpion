@@ -4,6 +4,7 @@ from ..authentication.models import User
 
 
 class Article(models.Model):
+    """This is a model for storing articles in the database"""
     slug = models.CharField(max_length=200)
     title = models.CharField(max_length=100)
     body = models.TextField()
