@@ -160,3 +160,21 @@ class AuthenticationTests(APITestCase):
                          'A user with this email and password was not found.')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
+
+    def test_return_current_user(self):
+        """
+        Test that the current user can be returned.
+        """
+        # Register user.
+        reg_response = self.client.post(
+            self.reg_url, self.data, format='json')
+        self.assertEqual(reg_response.status_code, status.HTTP_201_CREATED)
+        # Get current user.
+        current_user_url = reverse('authentication:current_user')
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + reg_response.data['token'])
+        response = self.client.get(current_user_url)
+        self.assertEqual(response.data['email'], "jake@jake.jake")
+        self.assertEqual(response.data['username'], "Jacob")
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
