@@ -48,8 +48,18 @@ class RegistrationAPIView(APIView):
         email.send()
 
         output = serializer.data
+<<<<<<< HEAD
         output['message'] = 'Please confirm your email address to complete ' \
                             'the registration '
+=======
+        output['token'] = token
+
+        # now that a user has been created and saved, the serializer's
+        # instance attribute will be the created User object so we can get
+        # the bio and image from it.
+        output['bio'] = serializer.instance.bio
+        output['image'] = serializer.instance.image
+>>>>>>> [feature #159053985] User Profile
         return Response(output,
                         status=status.HTTP_201_CREATED)
 
@@ -69,9 +79,15 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
+        # generate token on login
         token = generate_token(serializer.data).decode()
         output = serializer.data
         output['token'] = token
+
+        # here serializer.instance returns None, so we use
+        # serializer.validated_data which returns a user object
+        output['bio'] = serializer.validated_data.bio
+        output['image'] = serializer.validated_data.image
         return Response(output, status=status.HTTP_200_OK)
 
 
