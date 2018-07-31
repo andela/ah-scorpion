@@ -1,5 +1,5 @@
 from django.conf.urls import url
-
+from . import account_activator
 from .views import (
     LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView
 )
@@ -11,4 +11,7 @@ urlpatterns = [
     url(r'^user/?$', UserRetrieveUpdateAPIView.as_view()),
     url(r'^users/?$', RegistrationAPIView.as_view()),
     url(r'^users/login/?$', LoginAPIView.as_view()),
+    url(r'^activate/(?P<token>.+?)$',
+        account_activator.activate,
+        name='activate'),
 ]
