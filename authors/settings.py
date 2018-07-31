@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework',
+<<<<<<< HEAD
     'social_django',
 
+=======
+>>>>>>> 2a8e98e... [Feature #159053982] Send verification email to user on registration
     'authors.apps.authentication',
     'authors.apps.articles.apps.ArticlesConfig',
     'authors.apps.core',

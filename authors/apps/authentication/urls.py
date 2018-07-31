@@ -9,15 +9,36 @@ from .views import (LoginAPIView, RegistrationAPIView,
 app_name = "authentication"
 
 urlpatterns = [
+<<<<<<< HEAD
     path('users/signup/', RegistrationAPIView.as_view(), name='reg'),
     path('users/login/', LoginAPIView.as_view(), name='login'),
     path('user/', UserRetrieveUpdateAPIView.as_view(), name='current_user'),
     path('activate/<str:token>', account_activator.activate, name='activate'),
-    path('reset-password/', ResetPasswordAPIView.as_view(),
-         name='reset-password'),
-    path('confirm-password/<str:token>', ConfirmResetPassword.as_view(),
-         name="password_reset_done"),
-    path('reset-password-done/', ResetPasswordDoneAPIView.as_view(),
-         name='reset-password-done'),
+    path(
+        'reset-password/',
+        ResetPasswordAPIView.as_view(),
+        name='reset-password'),
+    path(
+        'confirm-password/<str:token>',
+        ConfirmResetPassword.as_view(),
+        name="password_reset_done"),
+    path(
+        'reset-password-done/',
+        ResetPasswordDoneAPIView.as_view(),
+        name='reset-password-done'),
     path('social_auth/', SocialAuth.as_view(), name="social_auth")
+=======
+    url(r'^users/?$', RegistrationAPIView.as_view(), name='reg'),
+    url(r'^users/login/?$', LoginAPIView.as_view(), name='login'),
+    url(r'^user/?$', UserRetrieveUpdateAPIView.as_view(), name='current_user'),
+    url(r'^activate/(?P<token>.+?)$',
+        account_activator.activate,
+        name='activate'),
+    url(r'^reset-password/', ResetPasswordAPIView.as_view(), name='reset-password'),
+    url(r'^confirm-password/(?P<token>.+?)$',
+        ConfirmResetPassword.as_view(),
+        name="password_reset_done"),
+     url(r'^reset-password-done/',
+       ResetPasswordDoneAPIView.as_view(), name='reset-password-done'),
+>>>>>>> 173541e... [chore] Add Test for password reset
 ]
