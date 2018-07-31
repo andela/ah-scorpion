@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'authors.apps.authentication',
+    'authors.apps.articles',
     'authors.apps.core',
     'authors.apps.profiles',
 ]
