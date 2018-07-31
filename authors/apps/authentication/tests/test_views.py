@@ -19,6 +19,7 @@ class AuthenticationTests(APITestCase):
         # Set up the registration url.
         self.reg_url = reverse('authentication:reg')
         self.login_url = reverse('authentication:login')
+        self.current_user_url = reverse('authentication:current_user')
 
     def test_register_user(self):
         """
@@ -170,11 +171,18 @@ class AuthenticationTests(APITestCase):
             self.reg_url, self.data, format='json')
         self.assertEqual(reg_response.status_code, status.HTTP_201_CREATED)
         # Get current user.
-        current_user_url = reverse('authentication:current_user')
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + reg_response.data['token'])
-        response = self.client.get(current_user_url)
+        response = self.client.get(self.current_user_url)
         self.assertEqual(response.data['email'], "jake@jake.jake")
         self.assertEqual(response.data['username'], "Jacob")
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
+
+    def test_return_current_user_without_token(self):
+        """
+        Test that the request cannot be made without a token
+        """
+        response = self.client.get(self.current_user_url)
+        self.assertEqual(response.status_code,
+                         status.HTTP_401_UNAUTHORIZED)
