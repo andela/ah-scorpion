@@ -2,17 +2,14 @@ language: python
 
 python:
     - "3.6"
-    
+
 install:
   - pip install -r requirements.txt
-  - pip install codecov
-  - pip install coveralls
-  - pip install coverage
-  - pip install nose
+
 
 script:
   - coverage erase
-  - nosetests --with-coverage
+  - coverage run --source='.' manage.py test
   - coverage report -m
 
 after_success:
