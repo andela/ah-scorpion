@@ -1,55 +1,39 @@
-from rest_framework.views import APIView
-from django.http.response import Http404
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import ArticleSerializer
+from django.utils.text import slugify
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 from .models import Article
-from ..authentication.models import User
+from .serializers import ArticleSerializer
 
 
-class ArticleList(APIView):
-    """
-    List all articles, or create a new article.
-    """
-    def get(self, request, format=None):
-        article = Article.objects.all()
-        serializer = ArticleSerializer(article, many=True)
-        return Response(serializer.data)
+class ArticleList(generics.ListCreateAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    def post(self, request, format=None):
-        request.data["author"] = request.user.pk
-        serializer = ArticleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_context(self):
+        context = super(ArticleList, self).get_serializer_context()
+        author = context["request"].user.pk
+        slug = slugify(context["request"].data.get("title", "No Title"))
+        context["request"].data.update({
+            "author": author,
+            "slug": slug
+        })
+        return context
 
 
-class ArticleDetail(APIView):
-    """
-    Retrieve, update or delete an article.
-    """
-    def get_object(self, pk):
-        try:
-            return Article.objects.get(pk=pk)
-        except Article.DoesNotExist:
-            raise Http404
+class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    def get(self, request, pk, format=None):
-        article = self.get_object(pk)
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data)
+    def get_serializer_context(self):
+        context = super(ArticleDetail, self).get_serializer_context()
+        author = context["request"].user.pk
+        slug = slugify(context["request"].data.get("title", "No Title"))
+        context["request"].data.update({
+            "author": author,
+            "slug": slug
+        })
+        return context
 
-    def put(self, request, pk, format=None):
-        request.data["author"] = request.user.pk
-        article = self.get_object(pk)
-        serializer = ArticleSerializer(article, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        article = self.get_object(pk)
-        article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)

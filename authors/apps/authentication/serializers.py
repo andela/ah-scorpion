@@ -107,7 +107,8 @@ class LoginSerializer(serializers.Serializer):
         # it is worth checking for. Raise an exception in this case.
         if not user.is_active:
             raise serializers.ValidationError(
-                'This user has been deactivated.')
+                'This user has been deactivated.'
+            )
 
         # modified this method to return the User object
         return user

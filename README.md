@@ -302,11 +302,12 @@ No authentication required, will return single article
 Example request body:
 
 ```source-json
-{
-  "title": "How to train your dragon",
-  "description": "Ever wonder how?",
-  "body": "You have to believe",
-  "tagList": ["reactjs", "angularjs", "dragons"]
+{ 
+    "title": "How to train your dragon",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tagList": ["reactjs", "angularjs", "dragons"],
+    "images" : ["imagelink1", imagelink2]
 }
 ```
 
