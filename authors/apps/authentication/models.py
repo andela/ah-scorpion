@@ -79,6 +79,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     # A timestamp reprensenting when this object was last updated.
     updated_at = models.DateTimeField(auto_now=True)
 
+    # profile fields
+    bio = models.CharField(max_length=140, default="")
+    image = models.CharField(max_length=512, default="")
+
     # More fields required by Django when specifying a custom user model.
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
@@ -96,7 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         This string is used when a `User` is printed in the console.
         """
-        return self.email
+        return 'User: <{}>'.format(self.email)
 
     @property
     def get_full_name(self):
