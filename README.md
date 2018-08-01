@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/andela/ah-scorpion.svg?branch=develop)](https://travis-ci.org/andela/ah-scorpion)
-[![Coverage Status](https://coveralls.io/repos/github/andela/ah-scorpion/badge.svg?branch=develop)](https://coveralls.io/github/andela/ah-scorpion?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/andela/ah-scorpion/badge.svg?branch=develop)](https://coveralls.io/github/andela/ah-scorpion?branch=develop)<br>
 Authors Haven - A Social platform for the creative at heart.
 =======
 
