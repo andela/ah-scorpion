@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ArticleSerializer
 from .models import Article
+from ..authentication.models import User
 
 
 class ArticleList(APIView):
@@ -16,6 +17,7 @@ class ArticleList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        request.data["author"] = request.user.pk
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -39,6 +41,7 @@ class ArticleDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
+        request.data["author"] = request.user.pk
         article = self.get_object(pk)
         serializer = ArticleSerializer(article, data=request.data)
         if serializer.is_valid():
