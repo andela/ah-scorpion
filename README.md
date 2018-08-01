@@ -17,7 +17,7 @@ by leveraging the modern web.
 ## API Spec
 The preferred JSON object to be returned by the API should be structured as follows:
 
-### Users (for authentication)
+### Users (for authentication) Response
 
 ```source-json
 {
@@ -30,7 +30,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Profile
+### Profile Response
 ```source-json
 {
   "profile": {
@@ -41,7 +41,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Single Article
+### Single Article Response
 ```source-json
 {
   "article": {
@@ -63,7 +63,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Multiple Articles
+### Multiple Articles Response
 ```source-json
 {
   "articles":[{
@@ -103,7 +103,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   "articlesCount": 2
 }
 ```
-### Single Comment
+### Single Comment Response
 ```source-json
 {
   "comment": {
@@ -120,7 +120,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Multiple Comments
+### Multiple Comments Response
 ```source-json
 {
   "comments": [{
@@ -138,7 +138,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   "commentsCount": 1
 }
 ```
-### List of Tags
+### List of Tags Response
 ```source-json
 {
   "tags": [
@@ -147,7 +147,7 @@ The preferred JSON object to be returned by the API should be structured as foll
   ]
 }
 ```
-### Errors and Status Codes
+### Errors and Status Codes Response
 If a request fails any validations, expect errors in the following format:
 
 ```source-json
