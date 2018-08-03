@@ -165,11 +165,10 @@ class ResetPasswordDoneAPIView(APIView):
     serializer_class = ResetPasswordDoneSerializers
 
     def put(self, request):
-        reset_data = request.data
 
-        serializer = self.serializer_class(data=reset_data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        # serializer.save()
 
         output = serializer.data
         output['Message'] = "You have successfully reset your password"

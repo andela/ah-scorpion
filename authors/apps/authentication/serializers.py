@@ -199,22 +199,18 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
          max_length=128)
     email = serializers.CharField(max_length=255)
 
-    def create(self, validated_data):
-        return User.objects.get(email=validated_data.get('email', None))
 
     def validate(self, data):
         user = User.objects.filter(email=data.get('email', None)).first()
-
         # check validity of the token against the user's email
         is_valid_token = default_token_generator.check_token(
             user, data.get('reset_token', None))
 
-        print("ddddddd", data.get('reset_token'))
 
-        # if is_valid_token is not True:
-        #     raise serializers.ValidationError(
-        #         "Invalid token or Activation expired"
-        #     )
+        if is_valid_token is not True:
+            raise serializers.ValidationError(
+                "Invalid token or Activation expired"
+            )
 
 
         user.set_password(data.get('new_password', None))
