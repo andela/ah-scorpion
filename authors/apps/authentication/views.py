@@ -45,12 +45,11 @@ class RegistrationAPIView(APIView):
 
         current_site = get_current_site(request)
         mail_subject = "Activate Authors' Haven account."
-        message = render_to_string(
-            'verification_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'token': generate_token(user).decode(),
-            })
+        message = render_to_string('verification_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'token': generate_token(user),
+        })
         to_email = serializer.data.get("email")
         co_name = EMAIL_HOST_NAME
 
@@ -108,7 +107,7 @@ def generate_token(identity: dict):
         identity=identity,
         iat=datetime.datetime.utcnow(),
         exp=datetime.datetime.utcnow() + datetime.timedelta(days=1))
-    return jwt.encode(payload, SECRET_KEY)
+    return jwt.encode(payload, SECRET_KEY).decode()
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
