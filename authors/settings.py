@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework',
+    'social_django',
+
     'authors.apps.authentication',
     'authors.apps.core',
     'authors.apps.profiles',
@@ -66,6 +68,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -139,14 +144,18 @@ CORS_ORIGIN_WHITELIST = (
 AUTH_USER_MODEL = 'authentication.User'
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER':
-    'authors.apps.core.exceptions.core_exception_handler',
-    'NON_FIELD_ERRORS_KEY':
-    'error',
-    'DEFAULT_AUTHENTICATION_CLASSES':
-    ('authors.apps.authentication.backends.JWTAuthentication', ),
-    'TEST_REQUEST_DEFAULT_FORMAT':
-    'json',
+    'EXCEPTION_HANDLER': 'authors.apps.core.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
+
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'authors.apps.authentication.backends.JWTAuthentication',
+    ),
+
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 EMAIL_USE_TLS = True
@@ -155,3 +164,33 @@ EMAIL_HOST_USER = os.environ['SCORPION_EMAIL_HOST_USER']
 EMAIL_HOST_NAME = os.environ['SCORPION_EMAIL_HOST_NAME']
 EMAIL_HOST_PASSWORD = os.environ['SCORPION_EMAIL_HOST_PASSWORD']
 EMAIL_PORT = os.environ['SCORPION_EMAIL_PORT']
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
+SOCIAL_AUTH_USER_FIELDS = ['email', 'username']
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_KEY =  os.environ["SCORPION_FB_KEY"]
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ["SCORPION_FB_SECRET"]
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'username']
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ["SCORPION_GOOGLE_KEY"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET  = os.environ["SCORPION_GOOGLE_SECRET"]
