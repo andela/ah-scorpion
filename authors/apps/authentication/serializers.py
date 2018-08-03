@@ -208,4 +208,4 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
 class SocialAuthSerializer(serializers.Serializer):
     """Serializers social_auth requests"""
     provider = serializers.CharField(max_length=255, required=True)
-    access_token = serializers.CharField(max_length=255, required=True, trim_whitespace=True)
+    access_token = serializers.CharField(max_length=1024, required=True, trim_whitespace=True)
