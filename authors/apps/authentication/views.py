@@ -170,7 +170,6 @@ class ResetPasswordDoneAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         # serializer.save()
 
-        output = serializer.data
-        output['Message'] = "You have successfully reset your password"
+        response = {"Message":"You have successfully reset your password" }
 
-        return Response(output, status=status.HTTP_201_CREATED)
+        return Response(response, status=status.HTTP_201_CREATED)
