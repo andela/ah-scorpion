@@ -15,10 +15,10 @@ urlpatterns = [
     url(r'^activate/(?P<token>.+?)$',
         account_activator.activate,
         name='activate'),
-    url(r'^reset-password/', ResetPasswordAPIView.as_view()),
+    url(r'^reset-password/', ResetPasswordAPIView.as_view(), name='reset-password'),
     url(r'^confirm-password/(?P<token>.+?)$',
         ConfirmResetPassword.as_view(),
         name="password_reset_done"),
      url(r'^reset-password-done/',
-       ResetPasswordDoneAPIView.as_view()),
+       ResetPasswordDoneAPIView.as_view(), name='reset-password-done'),
 ]
