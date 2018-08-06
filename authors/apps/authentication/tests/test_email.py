@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.tokens import default_token_generator
-from .utils import TEST_USER, create_user
+from .utility import TEST_USER, create_user
 from rest_framework import status
 from django.urls import reverse
 
@@ -8,7 +8,7 @@ from django.urls import reverse
 class TestPasswordReset(APITestCase):
     """ Testcase for reset password"""
 
-    EMAIL = {"email": "email@mail.com"}
+    EMAIL = {"email": "email@email.com"}
 
     def test_user_receive_reset_password_email(self):
         """ Test if user receives email. """
@@ -27,7 +27,7 @@ class TestPasswordReset(APITestCase):
             "reset_data": {
                 "token": token,
                 "email": user.email,
-                "new_password": "updatedPassword"
+                "new_password": "UpdatedPassword"
             }
         }
 
