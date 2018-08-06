@@ -170,9 +170,9 @@ class ForgotPasswordSerializers(serializers.Serializer):
     token = serializers.CharField(max_length=128, min_length=8, required=False)
 
     def validate(self, data):
-
+        # validates and checks if the user exist in th database
+        # if not raises a validation error
         user = User.objects.filter(email=data.get('email', None)).first()
-
         if user is None:
             raise serializers.ValidationError(
                 'User with this email was not found')
