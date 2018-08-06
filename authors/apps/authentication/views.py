@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from authors.apps.authentication.models import User
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer
 from .serializers import (
@@ -56,6 +57,12 @@ class RegistrationAPIView(APIView):
         output = serializer.data
         output['message'] = 'Please confirm your email address to complete ' \
                             'the registration '
+
+        # now that a user has been created and saved, the serializer's
+        # instance attribute will be the created User object so we can get
+        # the bio and image from it.
+        output['bio'] = serializer.instance.bio
+        output['image'] = serializer.instance.image
         return Response(output, status=status.HTTP_201_CREATED)
 
 
@@ -74,9 +81,15 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
+        # generate token on login
         token = generate_token(serializer.data).decode()
         output = serializer.data
         output['token'] = token
+
+        # here serializer.instance returns None, so we use
+        # serializer.validated_data which returns a user object
+        output['bio'] = serializer.validated_data.bio
+        output['image'] = serializer.validated_data.image
         return Response(output, status=status.HTTP_200_OK)
 
 
@@ -98,6 +111,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated, )
     renderer_classes = (UserJSONRenderer, )
     serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
         # There is nothing to validate or save here. Instead, we just want the
@@ -170,6 +184,6 @@ class ResetPasswordDoneAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         # serializer.save()
 
-        response = {"Message":"You have successfully reset your password" }
+        response = {"Message": "You have successfully reset your password"}
 
         return Response(response, status=status.HTTP_201_CREATED)

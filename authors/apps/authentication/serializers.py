@@ -1,11 +1,12 @@
-from django.contrib.auth import authenticate
 import re
+
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
 from .models import User
 from django.http import HttpResponse
 from .backends import JWTAuthentication
-
 
 from django.contrib.auth.tokens import default_token_generator
 
@@ -109,13 +110,8 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'This user has been deactivated.')
 
-        # The `validate` method should return a dictionary of validated data.
-        # This is the data that is passed to the `create` and `update` methods
-        # that we will see later on.
-        return {
-            'email': user.email,
-            'username': user.username,
-        }
+        # modified this method to return the User object
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -130,7 +126,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password')
+        fields = ('email', 'username', 'password', 'bio', 'image')
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -171,13 +167,11 @@ class UserSerializer(serializers.ModelSerializer):
 class ForgotPasswordSerializers(serializers.Serializer):
     # Ensure email is 255 character at maximum
     email = serializers.CharField(max_length=255)
-    token =serializers.CharField(
-         max_length=128, min_length=8, required=False)
+    token = serializers.CharField(max_length=128, min_length=8, required=False)
 
     def validate(self, data):
 
-        user = User.objects.filter(
-            email=data.get('email', None)).first()
+        user = User.objects.filter(email=data.get('email', None)).first()
 
         if user is None:
             raise serializers.ValidationError(
@@ -186,19 +180,15 @@ class ForgotPasswordSerializers(serializers.Serializer):
         # genetate token for user
         token = default_token_generator.make_token(user)
 
-        return {
-            "email": data.get('email'),
-            "token": token
-        }
+        return {"email": data.get('email'), "token": token}
+
 
 class ResetPasswordDoneSerializers(serializers.Serializer):
     # email is required to check the token
     new_password = serializers.CharField(
         max_length=128, min_length=8, write_only=True)
-    reset_token =serializers.CharField(
-         max_length=128)
+    reset_token = serializers.CharField(max_length=128)
     email = serializers.CharField(max_length=255)
-
 
     def validate(self, data):
         user = User.objects.filter(email=data.get('email', None)).first()
@@ -206,12 +196,9 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
         is_valid_token = default_token_generator.check_token(
             user, data.get('reset_token', None))
 
-
         if is_valid_token is not True:
             raise serializers.ValidationError(
-                "Invalid token or Activation expired"
-            )
-
+                "Invalid token or Activation expired")
 
         user.set_password(data.get('new_password', None))
         user.save()

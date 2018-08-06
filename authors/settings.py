@@ -146,6 +146,8 @@ REST_FRAMEWORK = {
     'error',
     'DEFAULT_AUTHENTICATION_CLASSES':
     ('authors.apps.authentication.backends.JWTAuthentication', ),
+    'TEST_REQUEST_DEFAULT_FORMAT':
+    'json',
 }
 
 EMAIL_USE_TLS = True
