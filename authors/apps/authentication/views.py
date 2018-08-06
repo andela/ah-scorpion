@@ -1,10 +1,11 @@
 import datetime
 import jwt
+import json
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,14 +14,19 @@ from authors.apps.authentication.models import User
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer
 from .serializers import (
-    LoginSerializer, RegistrationSerializer, UserSerializer
+    LoginSerializer,
+    ForgotPasswordSerializers,
+    RegistrationSerializer,
+    UserSerializer,
+    ResetPasswordDoneSerializers,
 )
+from authors.apps.core.e_mail import SendEmail
 
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = RegistrationSerializer
 
     def post(self, request):
@@ -35,17 +41,17 @@ class RegistrationAPIView(APIView):
 
         current_site = get_current_site(request)
         mail_subject = "Activate Authors' Haven account."
-        message = render_to_string('verification_email.html', {
-            'user': user,
-            'domain': current_site.domain,
-            'token': generate_token(user).decode(),
-        })
+        message = render_to_string(
+            'verification_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'token': generate_token(user).decode(),
+            })
         to_email = serializer.data.get("email")
         co_name = EMAIL_HOST_NAME
 
         email = EmailMessage(
-            mail_subject, message, from_email=co_name, to=[to_email]
-        )
+            mail_subject, message, from_email=co_name, to=[to_email])
         email.send()
 
         output = serializer.data
@@ -57,13 +63,12 @@ class RegistrationAPIView(APIView):
         # the bio and image from it.
         output['bio'] = serializer.instance.bio
         output['image'] = serializer.instance.image
-        return Response(output,
-                        status=status.HTTP_201_CREATED)
+        return Response(output, status=status.HTTP_201_CREATED)
 
 
 class LoginAPIView(APIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -95,16 +100,16 @@ def generate_token(identity: dict):
     :return: JWT token
     :rtype: bytes
     """
-    payload = dict(identity=identity,
-                   iat=datetime.datetime.utcnow(),
-                   exp=datetime.datetime.utcnow() + datetime.timedelta(
-                       days=1))
+    payload = dict(
+        identity=identity,
+        iat=datetime.datetime.utcnow(),
+        exp=datetime.datetime.utcnow() + datetime.timedelta(days=1))
     return jwt.encode(payload, SECRET_KEY)
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -122,10 +127,62 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         # Here is that serialize, validate, save pattern we talked about
         # before.
         serializer = self.serializer_class(
-            request.user, data=serializer_data, partial=True
-        )
+            request.user, data=serializer_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ResetPasswordAPIView(APIView):
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
+    serializer_class = ForgotPasswordSerializers
+
+    def post(self, request):
+        email = request.data
+
+        serializer = self.serializer_class(data=email)
+        serializer.is_valid(raise_exception=True)
+
+        email = SendEmail(
+            mail_subject="Confirmation of Password reset",
+            from_email=EMAIL_HOST_NAME,
+            to=serializer.data.get('email'),
+            template='reset_password.html',
+            content={
+                'user': email,
+                'domain': get_current_site(request).domain,
+                'token': serializer.data.get('token', None)
+            })
+        email.send()
+        response = {
+            "Message":
+            "Please confirm your email address to complete your password reset"
+        }
+
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class ConfirmResetPassword(APIView):
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
+    serializer_class = ForgotPasswordSerializers
+
+    def get(self, request, token):
+        # Displays the token.
+        return Response({"token": token})
+
+
+class ResetPasswordDoneAPIView(APIView):
+    permission_classes = (AllowAny, )
+    serializer_class = ResetPasswordDoneSerializers
+
+    def put(self, request):
+        # updates the password
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        response = {"Message": "You have successfully reset your password"}
+
+        return Response(response, status=status.HTTP_201_CREATED)

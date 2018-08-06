@@ -5,13 +5,19 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from .models import User
+from django.http import HttpResponse
+from .backends import JWTAuthentication
+
+from django.contrib.auth.tokens import default_token_generator
 
 
 def password_validator(password):
-    password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)" r"(?=.*[a-z])(?!.*\s).*$")
+    password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)"
+                                  r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
-        raise serializers.ValidationError("Password invalid, Password must be 8 characters long, "
-                                          "include numbers and letters and have no spaces");
+        raise serializers.ValidationError(
+            "Password invalid, Password must be 8 characters long, "
+            "include numbers and letters and have no spaces")
     return password
 
 
@@ -23,19 +29,25 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=128,
         min_length=8,
-        write_only=True, validators=[password_validator]
-    )
+        write_only=True,
+        validators=[password_validator])
     email = serializers.EmailField(
         max_length=30,
-        validators=[UniqueValidator(
-            queryset=User.objects.all(),
-            message="Email already exists, please login or use a different email")],
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message=
+                "Email already exists, please login or use a different email")
+        ],
     )
     username = serializers.CharField(
         max_length=30,
-        validators=[UniqueValidator(
-            queryset=User.objects.all(),
-            message="Username already exists, please enter a different username")],
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message=
+                "Username already exists, please enter a different username")
+        ],
     )
 
     # The client should not be able to send a token along with a registration
@@ -70,15 +82,13 @@ class LoginSerializer(serializers.Serializer):
         # email is not provided.
         if email is None:
             raise serializers.ValidationError(
-                'An email address is required to log in.'
-            )
+                'An email address is required to log in.')
 
         # As mentioned above, a password is required. Raise an exception if a
         # password is not provided.
         if password is None:
             raise serializers.ValidationError(
-                'A password is required to log in.'
-            )
+                'A password is required to log in.')
 
         # The `authenticate` method is provided by Django and handles checking
         # for a user that matches this email/password combination. Notice how
@@ -90,8 +100,7 @@ class LoginSerializer(serializers.Serializer):
         # `authenticate` will return `None`. Raise an exception in this case.
         if user is None:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.'
-            )
+                'A user with this email and password was not found.')
 
         # Django provides a flag on our `User` model called `is_active`. The
         # purpose of this flag to tell us whether the user has been banned
@@ -99,8 +108,7 @@ class LoginSerializer(serializers.Serializer):
         # it is worth checking for. Raise an exception in this case.
         if not user.is_active:
             raise serializers.ValidationError(
-                'This user has been deactivated.'
-            )
+                'This user has been deactivated.')
 
         # modified this method to return the User object
         return user
@@ -114,10 +122,7 @@ class UserSerializer(serializers.ModelSerializer):
     # change them, but that would create extra work while introducing no real
     # benefit, so let's just stick with the defaults.
     password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
-    )
+        max_length=128, min_length=8, write_only=True)
 
     class Meta:
         model = User
@@ -127,7 +132,7 @@ class UserSerializer(serializers.ModelSerializer):
         # specifying the field with `read_only=True` like we did for password
         # above. The reason we want to use `read_only_fields` here is because
         # we don't need to specify anything else about the field. For the
-        # password field, we needed to specify the `min_length` and 
+        # password field, we needed to specify the `min_length` and
         # `max_length` properties too, but that isn't the case for the token
         # field.
 
@@ -157,3 +162,44 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class ForgotPasswordSerializers(serializers.Serializer):
+    # Ensure email is 255 character at maximum
+    email = serializers.CharField(max_length=255)
+    token = serializers.CharField(max_length=128, min_length=8, required=False)
+
+    def validate(self, data):
+        # validates and checks if the user exist in th database
+        # if not raises a validation error
+        user = User.objects.filter(email=data.get('email', None)).first()
+        if user is None:
+            raise serializers.ValidationError(
+                'User with this email was not found')
+
+        # genetate token for user
+        token = default_token_generator.make_token(user)
+
+        return {"email": data.get('email'), "token": token}
+
+
+class ResetPasswordDoneSerializers(serializers.Serializer):
+    # email is required to check the token
+    new_password = serializers.CharField(
+        max_length=128, min_length=8, write_only=True)
+    reset_token = serializers.CharField(max_length=128)
+    email = serializers.CharField(max_length=255)
+
+    def validate(self, data):
+        user = User.objects.filter(email=data.get('email', None)).first()
+        # check validity of the token against the user's email
+        is_valid_token = default_token_generator.check_token(
+            user, data.get('reset_token', None))
+
+        if is_valid_token is not True:
+            raise serializers.ValidationError(
+                "Invalid token or Activation expired")
+
+        user.set_password(data.get('new_password', None))
+        user.save()
+        return data
