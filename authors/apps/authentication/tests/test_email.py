@@ -37,3 +37,13 @@ class TestPasswordReset(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data,
                          {"Message":"You have successfully reset your password"})
+
+    def test_invalid_email(self):
+        """Test user who is not in the database"""
+        EMAIL = {"email":"fake@email.com"}
+        response = self.client.post(
+            reverse("authentication:reset-password"),
+            self.EMAIL,
+            format='json')
+        error_message ={"errors": {"error": ["User with this email was not found"]}}
+        self.assertEqual(response.data, error_message)
