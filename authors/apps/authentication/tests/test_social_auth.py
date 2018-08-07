@@ -48,4 +48,3 @@ class SocialAuthenticationTests(APITestCase):
         data = {"access_token" : access_token, "provider" : "facebook"}
         response = self.client.post(self.auth_url , data=data)
         self.assertEqual(response.status_code, 400)
-      
