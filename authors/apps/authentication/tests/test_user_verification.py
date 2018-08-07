@@ -46,7 +46,7 @@ class AuthenticationTests(APITestCase):
         """
         self.client.post(self.reg_url, self.data, format='json')
         token = generate_token(self.data['user'], 0.01).decode()
-        time.sleep(1)
+        time.sleep(2)
 
         self.activate_url = reverse(self.activate_url,
                                     kwargs={'token': token
