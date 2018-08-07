@@ -1,6 +1,11 @@
+import time
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+
+from authors.apps.authentication.serializers import RegistrationSerializer
+from authors.apps.authentication.views import generate_token
 
 
 class AuthenticationTests(APITestCase):
@@ -27,9 +32,6 @@ class AuthenticationTests(APITestCase):
         """
         self.activate_url = reverse(self.activate_url,
                                     kwargs={'token': "hajshja"})
-        # self.assertRaises(AuthenticationFailed, self.client.post(
-        #     self.activate_url))
-
         response = self.client.get(
             self.activate_url)
 
@@ -45,12 +47,12 @@ class AuthenticationTests(APITestCase):
         HTTPResponse
         :return: None
         """
-        token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9" \
-                ".eyJpZGVudGl0eSI6eyJlbWFpbCI6Im11c2Ftb0Bs" \
-                "aXZlLmNvbSIsInVzZXJuYW1lIjoic211bnlpbGkiLCJw" \
-                "YXNzd29yZCI6IjEyMzRhYmNkIn0sImlhdCI6MTUzMzA0" \
-                "MTQ3NiwiZXhwIjoxNTMzMTI3ODc2fQ.UxL59_2TBgeEn" \
-                "pLIM6ky_VNybkoVw60T0xT_nA7e93g"
+
+        self.client.post(self.reg_url, self.data, format='json')
+
+        token = generate_token(self.data['user'], 0.01).decode()
+        time.sleep(1)
+
         self.activate_url = reverse(self.activate_url,
                                     kwargs={'token': token
                                             })
