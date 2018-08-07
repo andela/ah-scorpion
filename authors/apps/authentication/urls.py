@@ -15,15 +15,11 @@ urlpatterns = [
     url(r'^activate/(?P<token>.+?)$',
         account_activator.activate,
         name='activate'),
-<<<<<<< HEAD
     url(r'^reset-password/', ResetPasswordAPIView.as_view(), name='reset-password'),
     url(r'^confirm-password/(?P<token>.+?)$',
         ConfirmResetPassword.as_view(),
         name="password_reset_done"),
     url(r'^reset-password-done/',
        ResetPasswordDoneAPIView.as_view(), name='reset-password-done'),
-    url(r'^social_auth/', SocialAuth.as_view(), name="social_auth")
-=======
     path('social_auth/', SocialAuth.as_view(), name="social_auth")
->>>>>>> [Chore] Refactor to use path for urls
 ]
