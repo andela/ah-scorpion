@@ -6,11 +6,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
-<<<<<<< HEAD
-from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
-=======
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
->>>>>>> [Chore] Refactor to generic views
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
