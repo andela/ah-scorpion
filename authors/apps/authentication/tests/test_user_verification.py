@@ -4,7 +4,6 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from authors.apps.authentication.serializers import RegistrationSerializer
 from authors.apps.authentication.views import generate_token
 
 
@@ -14,9 +13,9 @@ class AuthenticationTests(APITestCase):
         Data for the tests
         """
         self.data = {
-                "username": "Jacob",
-                "email": "jake@jake.jake",
-                "password": "jakejake23"
+            "username": "Jacob",
+            "email": "jake@jake.jake",
+            "password": "jakejake23"
         }
         # Set up the registration url.
         self.reg_url = reverse('authentication:reg')
@@ -45,12 +44,10 @@ class AuthenticationTests(APITestCase):
         HTTPResponse
         :return: None
         """
-
         self.client.post(self.reg_url, self.data, format='json')
 
         token = generate_token(self.data, 0.01)
         time.sleep(2)
-
         self.activate_url = reverse(self.activate_url,
                                     kwargs={'token': token
                                             })
