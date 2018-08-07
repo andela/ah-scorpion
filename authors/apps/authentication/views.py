@@ -25,8 +25,8 @@ from authors.apps.core.e_mail import SendEmail
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
     def post(self, request):
@@ -63,12 +63,14 @@ class RegistrationAPIView(APIView):
         # the bio and image from it.
         output['bio'] = serializer.instance.bio
         output['image'] = serializer.instance.image
-        return Response(output, status=status.HTTP_201_CREATED)
+
+        return Response(output,
+                        status=status.HTTP_201_CREATED)
 
 
 class LoginAPIView(APIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -108,8 +110,8 @@ def generate_token(identity: dict):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -135,8 +137,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class ResetPasswordAPIView(APIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = ForgotPasswordSerializers
 
     def post(self, request):
@@ -158,15 +160,15 @@ class ResetPasswordAPIView(APIView):
         email.send()
         response = {
             "Message":
-            "Please confirm your email address to complete your password reset"
+                "Please confirm your email address to complete your password reset"
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
 
 
 class ConfirmResetPassword(APIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = ForgotPasswordSerializers
 
     def get(self, request, token):
@@ -175,7 +177,7 @@ class ConfirmResetPassword(APIView):
 
 
 class ResetPasswordDoneAPIView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = ResetPasswordDoneSerializers
 
     def put(self, request):

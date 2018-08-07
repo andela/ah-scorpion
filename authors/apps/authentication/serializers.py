@@ -15,9 +15,8 @@ def password_validator(password):
     password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)"
                                   r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
-        raise serializers.ValidationError(
-            "Password invalid, Password must be 8 characters long, "
-            "include numbers and letters and have no spaces")
+        raise serializers.ValidationError("Password invalid, Password must be 8 characters long, "
+                                          "include numbers and letters and have no spaces")
     return password
 
 
@@ -108,7 +107,8 @@ class LoginSerializer(serializers.Serializer):
         # it is worth checking for. Raise an exception in this case.
         if not user.is_active:
             raise serializers.ValidationError(
-                'This user has been deactivated.')
+                'This user has been deactivated.'
+            )
 
         # modified this method to return the User object
         return user
