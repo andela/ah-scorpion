@@ -6,7 +6,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
+<<<<<<< HEAD
 from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
+=======
+from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
+>>>>>>> [Chore] Refactor to generic views
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -192,7 +196,7 @@ class ResetPasswordDoneAPIView(APIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
 
-class SocialAuth(APIView):
+class SocialAuth(CreateAPIView):
     """
     Allows for social signup and login using Google and Facebook
     """
@@ -200,7 +204,7 @@ class SocialAuth(APIView):
     serializer_class = SocialAuthSerializer
     renderer_classes = (UserJSONRenderer,)
 
-    def post(self, request):
+    def create(self, request):
         """
         Receives the access_token and provider from the request,
         once authentication is comlpete, it creates a new user record
