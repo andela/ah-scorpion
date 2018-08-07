@@ -1,6 +1,4 @@
 from django.http import HttpResponse
-from django.test import TestCase
-from jwt import ExpiredSignatureError
 from rest_framework.exceptions import AuthenticationFailed
 
 from authors.apps.authentication.backends import JWTAuthentication
@@ -11,7 +9,6 @@ def activate(request, token):
     try:
         identity = jwt_authentication.authenticate_credentials(token)
     except AuthenticationFailed as e:
-
         return HttpResponse(status=401, content=e)
 
     user = identity[0]
