@@ -1,9 +1,9 @@
 from django.conf.urls import url
+from django.urls import path
 from . import account_activator
 from .views import (LoginAPIView, RegistrationAPIView,
                     UserRetrieveUpdateAPIView, ResetPasswordAPIView,
-                    ConfirmResetPassword, ResetPasswordDoneAPIView)
-# reset_password_confirm))
+                    ConfirmResetPassword, ResetPasswordDoneAPIView, SocialAuth)
 
 # App name for the namespace in Django 2.0.6
 app_name = "authentication"
@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^confirm-password/(?P<token>.+?)$',
         ConfirmResetPassword.as_view(),
         name="password_reset_done"),
-     url(r'^reset-password-done/',
+    url(r'^reset-password-done/',
        ResetPasswordDoneAPIView.as_view(), name='reset-password-done'),
+    path('social_auth/', SocialAuth.as_view(), name="social_auth")
 ]

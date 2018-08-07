@@ -1,14 +1,18 @@
 import datetime
 import jwt
 import json
+import requests
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from social_core.exceptions import MissingBackend
+from requests.exceptions import HTTPError
+from social_django.utils import load_backend, load_strategy
 
 from authors.apps.authentication.models import User
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
@@ -19,6 +23,7 @@ from .serializers import (
     RegistrationSerializer,
     UserSerializer,
     ResetPasswordDoneSerializers,
+    SocialAuthSerializer
 )
 from authors.apps.core.e_mail import SendEmail
 
@@ -41,12 +46,11 @@ class RegistrationAPIView(APIView):
 
         current_site = get_current_site(request)
         mail_subject = "Activate Authors' Haven account."
-        message = render_to_string(
-            'verification_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'token': generate_token(user).decode(),
-            })
+        message = render_to_string('verification_email.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'token': generate_token(user),
+        })
         to_email = serializer.data.get("email")
         co_name = EMAIL_HOST_NAME
 
@@ -84,7 +88,7 @@ class LoginAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         # generate token on login
-        token = generate_token(serializer.data).decode()
+        token = generate_token(serializer.data)
         output = serializer.data
         output['token'] = token
 
@@ -100,13 +104,13 @@ def generate_token(identity: dict):
     Method that generates a JSON Web Token for the user
     :param identity: User information to be encoded as a dictionary
     :return: JWT token
-    :rtype: bytes
+    :rtype: string
     """
     payload = dict(
         identity=identity,
         iat=datetime.datetime.utcnow(),
         exp=datetime.datetime.utcnow() + datetime.timedelta(days=1))
-    return jwt.encode(payload, SECRET_KEY)
+    return jwt.encode(payload, SECRET_KEY).decode()
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
@@ -188,3 +192,96 @@ class ResetPasswordDoneAPIView(APIView):
         response = {"Message": "You have successfully reset your password"}
 
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class SocialAuth(CreateAPIView):
+    """
+    Allows for social signup and login using Google and Facebook
+    """
+    permission_classes = (AllowAny,)
+    serializer_class = SocialAuthSerializer
+    renderer_classes = (UserJSONRenderer,)
+
+    def create(self, request):
+        """
+        Receives the access_token and provider from the request,
+        once authentication is comlpete, it creates a new user record
+        if it does exist already. The user's information (username, email and image)
+        are saved and the user is provided with a JWT token for authorization when
+        using our API.
+        """
+        # Get the access_token and provider from request
+        # the access_token is provided by the particular provider
+        # which in our case is either 'google-oauth2' or 'facebook'
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        provider = serializer.data.get('provider')
+        access_token = serializer.data.get('access_token')
+
+        # strategy sets up the required custom configuration for working with Django
+        strategy = load_strategy(request)
+
+        try:
+
+            # Loads backends defined on SOCIAL_AUTH_AUTHENTICATION_BACKENDS,
+            # checks the appropiate one by using the provider given
+            backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
+
+        except MissingBackend:
+            return Response({
+                "errors": {
+                    "provider": ["Invalid provider"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+ 
+        try:
+            # authenticates the user and 
+            # creates a user in our user model if a user with
+            # the given email and username does not exist already.
+            # If the user exists, we just authenticate the user.
+            user =  backend.do_auth(access_token)
+
+        except BaseException as error:
+            return Response({
+                "error" : str(error),
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Since the user is using social authentication, there is no need for email verification.
+        # We therefore set the user to active here.
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+
+        def get_image_url(self):
+            """
+            gets the user's current image url from the provider.
+            saves/updates the image field of the particular user
+            and returns the image_url
+            """
+            try:
+                if provider == "google-oauth2":
+                    url = "http://picasaweb.google.com/data/entry/api/user/{}?alt=json".format(user.email)
+                    data = requests.get(url).json()
+                    image_url = data["entry"]["gphoto$thumbnail"]["$t"]
+
+                elif provider == "facebook":
+                    id_url = "https://graph.facebook.com/me?access_token={}".format(access_token)
+                    id_data = requests.get(id_url).json()
+                    user_id = id_data["id"]
+                    url = "http://graph.facebook.com/{}/picture?type=small".format(user_id)
+                    image_url = requests.get(url, allow_redirects=True).url
+
+            except BaseException:
+                image_url = ""
+
+            user.image = image_url
+            return image_url
+        
+        serializer = UserSerializer(user)
+        token = generate_token(serializer.data)
+        output = serializer.data
+        output["token"] = token
+        output['bio'] = serializer.instance.bio
+        output['image'] = get_image_url(self)
+        return Response(output, status=status.HTTP_200_OK)
