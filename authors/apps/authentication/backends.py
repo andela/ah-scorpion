@@ -36,7 +36,7 @@ class JWTAuthentication(authentication.TokenAuthentication):
         identity = payload['identity']
         try:
             user = User.objects.get(username=identity['username'])
-        except User.DoesNotExist:
+        except user.DoesNotExist:
             return None, None
 
         return user, None
