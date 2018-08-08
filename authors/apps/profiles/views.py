@@ -1,12 +1,15 @@
 # Create your views here.
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from authors.apps.authentication.models import User
-from authors.apps.profiles.renderers import ProfileJSONRenderer
+from authors.apps.profiles.renderers import ProfileJSONRenderer, FollowersJSONRenderer
+from authors.apps.profiles.renderers import FollowingJSONRenderer
+
 from authors.apps.profiles.serializers import ProfileSerializer
 
 
@@ -60,3 +63,33 @@ class FollowUserRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         current_user.save()
         serializer = self.get_serializer(unfollowed_user)
         return Response(serializer.data)
+
+class FollowersListAPIView(ListAPIView):
+    """
+    This class gets a user's followers and those he/she is following
+    """
+    renderer_classes = (FollowersJSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the followers
+        for the currently authenticated user.
+        """
+        return self.request.user.followers
+
+class UserFollowingListAPIView(ListAPIView):
+    """
+    This class gets a user's followers and those he/she is following
+    """
+    renderer_classes = (FollowingJSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the followers
+        for the currently authenticated user.
+        """
+        return self.request.user.follows

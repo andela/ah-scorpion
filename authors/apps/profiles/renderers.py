@@ -1,5 +1,4 @@
 import json
-
 from rest_framework.renderers import JSONRenderer
 from rest_framework.utils.serializer_helpers import ReturnDict
 
@@ -42,4 +41,23 @@ class ProfileJSONRenderer(JSONRenderer):
         # Finally, we can render our data under the "profile" namespace.
         return json.dumps({
             'profile': data
+        })
+
+class FollowersJSONRenderer(JSONRenderer):
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
+
+        # Render our data under the "followers" namespace.
+        return json.dumps({
+            'followers': data
+        })
+
+class FollowingJSONRenderer(JSONRenderer):
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        # Render our data under the "followers" namespace.
+        return json.dumps({
+            'following': data
         })
