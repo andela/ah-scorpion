@@ -1,4 +1,4 @@
-# authentication/tests/test_views.py
+# authentication / tests / test_views.py
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -37,8 +37,8 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['username'] = ""
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(
-            response.data['errors']['username'][0], "This field may not be blank.")
+        self.assertEqual(response.data['errors']['username'][0],
+                         "This field may not be blank.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_register_empty_user_name(self):
@@ -47,8 +47,8 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['username'] = " "
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(
-            response.data['errors']['username'][0], "This field may not be blank.")
+        self.assertEqual(response.data['errors']['username'][0],
+                         "This field may not be blank.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_weak_password(self):
@@ -58,8 +58,10 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['password'] = "1234"
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(response.data['errors']['password'][0],
-                         "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces")
+        self.assertEqual(
+            response.data['errors']['password'][0],
+            "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces"
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_email_wrong_format(self):
@@ -68,8 +70,8 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['email'] = "jgmail"
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(response.data['errors']['email']
-                         [0], "Enter a valid email address.")
+        self.assertEqual(response.data['errors']['email'][0],
+                         "Enter a valid email address.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_empty_email(self):
@@ -78,8 +80,8 @@ class AuthenticationTests(APITestCase):
         """
         self.data['user']['email'] = ""
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(response.data['errors']['email']
-                         [0], "This field may not be blank.")
+        self.assertEqual(response.data['errors']['email'][0],
+                         "This field may not be blank.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_register_existing_user(self):
@@ -93,11 +95,9 @@ class AuthenticationTests(APITestCase):
                 "password": "jakejake23"
             }
         }
-        response = self.client.post(
-            self.reg_url, test_user, format='json')
+        response = self.client.post(self.reg_url, test_user, format='json')
         # Register the user a second time
-        response = self.client.post(
-            self.reg_url, test_user, format='json')
+        response = self.client.post(self.reg_url, test_user, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # def test_login_user(self):
@@ -121,27 +121,28 @@ class AuthenticationTests(APITestCase):
         Test that you cannot login a user with the wrong email and password
         """
         # Register a user
-        response = self.client.post(
-            self.reg_url, self.data, format='json')
+        response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Login the user with wrong email
-        login_response = self.client.post(self.login_url, {
-            "user": {
+        login_response = self.client.post(
+            self.login_url,
+            {"user": {
                 "email": "jake@.jake",
                 "password": "jakejake23"
-            }
-        }, format='json')
+            }},
+            format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
         # Login the user with wrong password
-        login_password_response = self.client.post(self.login_url, {
-            "user": {
+        login_password_response = self.client.post(
+            self.login_url,
+            {"user": {
                 "email": "jake@.jake",
                 "password": "jake"
-            }
-        }, format='json')
+            }},
+            format='json')
         self.assertEqual(login_password_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
         self.assertEqual(login_password_response.status_code,
@@ -151,12 +152,13 @@ class AuthenticationTests(APITestCase):
         """
         Test that a user who is not registered cannot login
         """
-        login_response = self.client.post(self.login_url, {
-            "user": {
+        login_response = self.client.post(
+            self.login_url,
+            {"user": {
                 "email": "jake@.jake",
                 "password": "jakejake23"
-            }
-        }, format='json')
+            }},
+            format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
         self.assertEqual(login_response.status_code,
@@ -185,5 +187,4 @@ class AuthenticationTests(APITestCase):
         Test that the request cannot be made without a token
         """
         response = self.client.get(self.current_user_url)
-        self.assertEqual(response.status_code,
-                         status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
