@@ -31,7 +31,6 @@ class FollowUserRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = ProfileSerializer
     lookup_field = ("username")
 
-
     def update(self, request, username):
         """
         Method used in following users
