@@ -3,6 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from authors.apps.authentication.models import User
+
 
 class AuthenticationTests(APITestCase):
     def setUp(self):
@@ -10,11 +12,9 @@ class AuthenticationTests(APITestCase):
         Data for the tests
         """
         self.data = {
-            "user": {
                 "username": "Jacob",
                 "email": "jake@jake.jake",
                 "password": "jakejake23"
-            }
         }
         # Set up the registration url.
         self.reg_url = reverse('authentication:reg')
@@ -26,16 +26,16 @@ class AuthenticationTests(APITestCase):
         Test that a user can register.
         """
         response = self.client.post(self.reg_url, self.data, format='json')
-        self.assertEqual(response.data['email'], self.data['user']['email'])
+        self.assertEqual(response.data['email'], self.data['email'])
         self.assertEqual(response.data['username'],
-                         self.data['user']['username'])
+                         self.data['username'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_register_without_user_name(self):
         """
         Test that a user cannot register without a username.
         """
-        self.data['user']['username'] = ""
+        self.data['username'] = ""
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
             response.data['errors']['username'][0], "This field may not be blank.")
@@ -45,7 +45,7 @@ class AuthenticationTests(APITestCase):
         """
         Test that a user cannot register empty string.
         """
-        self.data['user']['username'] = " "
+        self.data['username'] = " "
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
             response.data['errors']['username'][0], "This field may not be blank.")
@@ -56,7 +56,7 @@ class AuthenticationTests(APITestCase):
         Test that a user enters a password containing 8 characters
         with numbers and letters.
         """
-        self.data['user']['password'] = "1234"
+        self.data['password'] = "1234"
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.data['errors']['password'][0],
                          "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces")
@@ -66,7 +66,7 @@ class AuthenticationTests(APITestCase):
         """
         Test that the user enters an email in the correct format
         """
-        self.data['user']['email'] = "jgmail"
+        self.data['email'] = "jgmail"
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.data['errors']['email']
                          [0], "Enter a valid email address.")
@@ -76,7 +76,7 @@ class AuthenticationTests(APITestCase):
         """
         Test that the user does not enter an empty email
         """
-        self.data['user']['email'] = ""
+        self.data['email'] = ""
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.data['errors']['email']
                          [0], "This field may not be blank.")
@@ -87,34 +87,36 @@ class AuthenticationTests(APITestCase):
         Test that an already registered user cannot register again
         """
         test_user = {
-            "user": {
-                "username": "Jacob",
-                "email": "jake@jake.jake",
-                "password": "jakejake23"
-            }
+            "username": "Jacob",
+            "email": "jake@jake.jake",
+            "password": "jakejake23"
         }
-        response = self.client.post(
+
+        # register the user the first time
+        self.client.post(
             self.reg_url, test_user, format='json')
+
         # Register the user a second time
         response = self.client.post(
             self.reg_url, test_user, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # def test_login_user(self):
-    #     """
-    #     Test that a user can login
-    #     """
-    #     # Register a user
-    #     response = self.client.post(self.reg_url, self.data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     # Login the user
-    #     login_response = self.client.post(self.login_url, {
-    #         "user": {
-    #             "email": "jake@jake.jake",
-    #             "password": "jakejake23"
-    #         }
-    #     }, format='json')
-    #     self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+    def test_login_user(self):
+        """
+        Test that a user can login
+        """
+        # Register a user
+        response = self.client.post(self.reg_url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.filter(email=self.data['email']).first()
+        user.is_active = True
+        user.save()
+        # Login the user
+        login_response = self.client.post(self.login_url, {
+            "email": "jake@jake.jake",
+            "password": "jakejake23"
+        }, format='json')
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
     def test_login_user_wrong_email_and_password(self):
         """
@@ -126,10 +128,8 @@ class AuthenticationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Login the user with wrong email
         login_response = self.client.post(self.login_url, {
-            "user": {
                 "email": "jake@.jake",
                 "password": "jakejake23"
-            }
         }, format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
@@ -137,10 +137,8 @@ class AuthenticationTests(APITestCase):
                          status.HTTP_400_BAD_REQUEST)
         # Login the user with wrong password
         login_password_response = self.client.post(self.login_url, {
-            "user": {
                 "email": "jake@.jake",
                 "password": "jake"
-            }
         }, format='json')
         self.assertEqual(login_password_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
@@ -152,33 +150,35 @@ class AuthenticationTests(APITestCase):
         Test that a user who is not registered cannot login
         """
         login_response = self.client.post(self.login_url, {
-            "user": {
                 "email": "jake@.jake",
                 "password": "jakejake23"
-            }
         }, format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
 
-    # def test_return_current_user(self):
-    #     """
-    #     Test that the current user can be returned.
-    #     """
-    #     # Register user.
-    #     reg_response = self.client.post(
-    #         self.reg_url, self.data, format='json')
-    #     self.assertEqual(reg_response.status_code, status.HTTP_201_CREATED)
-    #     print(reg_response.data)
-    #     # Get current user.
-    #     self.client.credentials(
-    #         HTTP_AUTHORIZATION='Bearer ' + reg_response.data['token'])
-    #     response = self.client.get(self.current_user_url)
-    #     self.assertEqual(response.data['email'], "jake@jake.jake")
-    #     self.assertEqual(response.data['username'], "Jacob")
-    #     self.assertEqual(response.status_code,
-    #                      status.HTTP_200_OK)
+    def test_return_current_user(self):
+        """
+        Test that the current user can be returned.
+        """
+        # Register user.
+        reg_response = self.client.post(
+            self.reg_url, self.data, format='json')
+        self.assertEqual(reg_response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.filter(email=self.data['email']).first()
+        user.is_active = True
+        user.save()
+        login_response = self.client.post(
+            self.login_url, self.data, format='json')
+        # Get current user.
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + login_response.data['token'])
+        response = self.client.get(self.current_user_url)
+        self.assertEqual(response.data['email'], "jake@jake.jake")
+        self.assertEqual(response.data['username'], "Jacob")
+        self.assertEqual(response.status_code,
+                         status.HTTP_200_OK)
 
     def test_return_current_user_without_token(self):
         """

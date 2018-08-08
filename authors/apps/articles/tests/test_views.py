@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
 from rest_framework.test import force_authenticate
 
-from authors.apps.authentication.models import User
 from authors.apps.articles.views import ArticleList, ArticleDetail
+from authors.apps.authentication.models import User
 
 
 class AuthenticationTests(APITestCase):
@@ -31,7 +31,8 @@ class AuthenticationTests(APITestCase):
         """
         Test that a user can't create an article without authorisation.
         """
-        response = self.client.post('/api/articles/', self.data, format='json')
+        response = self.client.post(self.articles_url, self.data,
+                                    format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_article_successfully(self):

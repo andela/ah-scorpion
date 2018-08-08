@@ -170,9 +170,9 @@ If a request fails any validations, expect errors in the following format:
 Endpoints:
 ----------
 
-### Authentication:
+### Log In:
 
-`POST /api/users/login`
+`POST /api/v1/users/login`
 
 Example request body:
 
@@ -189,7 +189,7 @@ Required fields: `email`, `password`
 
 ### Registration:
 
-`POST /api/users`
+`POST /api/v1/users/signup`
 
 Example request body:
 
@@ -207,13 +207,13 @@ Required fields: `email`, `username`, `password`
 
 ### Get Current User
 
-`GET /api/user`
+`GET /api/v1/user`
 
 Authentication required, returns a User that's the current user
 
 ### Update User
 
-`PUT /api/user`
+`PUT /api/v1/user`
 
 Example request body:
 
@@ -231,13 +231,13 @@ Accepted fields: `email`, `username`, `password`, `image`, `bio`
 
 ### Get Profile
 
-`GET /api/profiles/:username`
+`GET /api/v1/profiles/:username`
 
 Authentication optional, returns a Profile
 
 ### Follow user
 
-`POST /api/profiles/:username/follow`
+`POST /api/v1/profiles/:username/follow`
 
 Authentication required, returns a Profile
 
@@ -245,7 +245,7 @@ No additional parameters required
 
 ### Unfollow user
 
-`DELETE /api/profiles/:username/follow`
+`DELETE /api/v1/profiles/:username/follow`
 
 Authentication required, returns a Profile
 
@@ -253,7 +253,7 @@ No additional parameters required
 
 ### List Articles
 
-`GET /api/articles`
+`GET /api/v1/articles`
 
 Returns most recent articles globally by default, provide `tag`, `author` or `favorited` query parameter to filter results
 
@@ -283,7 +283,7 @@ Authentication optional, will return multiple articles, ordered by most recent 
 
 ### Feed Articles
 
-`GET /api/articles/feed`
+`GET /api/v1/articles/feed`
 
 Can also take `limit` and `offset` query parameters like List Articles
 
@@ -291,13 +291,13 @@ Authentication required, will return multiple articles created by followed use
 
 ### Get Article
 
-`GET /api/articles/:slug`
+`GET /api/v1/articles/:slug`
 
 No authentication required, will return single article
 
 ### Create Article
 
-`POST /api/articles`
+`POST /api/v1/articles`
 
 Example request body:
 
@@ -319,7 +319,7 @@ Optional fields: `tagList` as an array of Strings
 
 ### Update Article
 
-`PUT /api/articles/:slug`
+`PUT /api/v1/articles/:slug`
 
 Example request body:
 
@@ -337,13 +337,13 @@ The `slug` also gets updated when the `title` is changed
 
 ### Delete Article
 
-`DELETE /api/articles/:slug`
+`DELETE /api/v1/articles/:slug`
 
 Authentication required
 
 ### Add Comments to an Article
 
-`POST /api/articles/:slug/comments`
+`POST /api/v1/articles/:slug/comments`
 
 Example request body:
 
@@ -358,26 +358,26 @@ Required field: `body`
 
 ### Get Comments from an Article
 
-`GET /api/articles/:slug/comments`
+`GET /api/v1/articles/:slug/comments`
 
 Authentication optional, returns multiple comments
 
 ### Delete Comment
 
-`DELETE /api/articles/:slug/comments/:id`
+`DELETE /api/v1/articles/:slug/comments/:id`
 
 Authentication required
 
 ### Favorite Article
 
-`POST /api/articles/:slug/favorite`
+`POST /api/v1/articles/:slug/favorite`
 
 Authentication required, returns the Article
 No additional parameters required
 
 ### Unfavorite Article
 
-`DELETE /api/articles/:slug/favorite`
+`DELETE /api/v1/articles/:slug/favorite`
 
 Authentication required, returns the Article
 
@@ -385,7 +385,7 @@ No additional parameters required
 
 ### Get Tags
 
-`GET /api/tags`
+`GET /api/v1/tags`
 
 ### Configuring environment variables
 
