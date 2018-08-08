@@ -8,7 +8,7 @@ class UserManager(BaseUserManager):
     """
     Django requires that custom users define their own Manager class. By
     inheriting from `BaseUserManager`, we get a lot of the same code used by
-    Django to create a `User` for free. 
+    Django to create a `User` for free.
 
     All we have to do is override the `create_user` function which we will use
     to create `User` objects.
@@ -83,6 +83,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     bio = models.CharField(max_length=140, default="")
     image = models.CharField(max_length=512, default="")
 
+    # User following field/join table
+    follows = models.ManyToManyField('self',related_name='followers', symmetrical=False)
+
     # More fields required by Django when specifying a custom user model.
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
@@ -118,4 +121,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         the user's real name, we return their username instead.
         """
         return self.username
-
