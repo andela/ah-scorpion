@@ -9,6 +9,9 @@ from django.http import HttpResponse
 from .backends import JWTAuthentication
 
 from django.contrib.auth.tokens import default_token_generator
+from authors.apps.core.e_mail import SendEmail
+from django.contrib.sites.shortcuts import get_current_site
+from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 
 
 def password_validator(password):
@@ -57,10 +60,29 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'username', 'password', 'bio', 'image']
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
+
+        # import generate_token
+        # 'generate_token' is imported to prevent import error
+        from .views import generate_token
+        from authors.apps.core.e_mail import SendEmail
+        from django.contrib.sites.shortcuts import get_current_site
+        from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
+
+        email = SendEmail(
+            mail_subject="Activate Authors' Haven account.",
+            from_email=EMAIL_HOST_NAME,
+            to=validated_data["email"],
+            template='verification_email.html',
+            content={
+                'user': validated_data,
+                'domain': get_current_site(self.context["request"]).domain,
+                'token': generate_token(validated_data),
+            })
+        email.send()
         return User.objects.create_user(**validated_data)
 
 
@@ -100,7 +122,7 @@ class LoginSerializer(serializers.Serializer):
         # `authenticate` will return `None`. Raise an exception in this case.
         if user is None:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.')
+                'A user with this email or password was not found.')
 
         # Django provides a flag on our `User` model called `is_active`. The
         # purpose of this flag to tell us whether the user has been banned
@@ -111,6 +133,7 @@ class LoginSerializer(serializers.Serializer):
                 'This user has been deactivated.')
 
         # modified this method to return the User object
+        # token = generate_token(data)
         return user
 
 
@@ -180,6 +203,17 @@ class ForgotPasswordSerializers(serializers.Serializer):
         # genetate token for user
         token = default_token_generator.make_token(user)
 
+        email = SendEmail(
+            mail_subject="Confirmation of Password reset",
+            from_email=EMAIL_HOST_NAME,
+            to=data.get('email', None),
+            template='reset_password.html',
+            content={
+                'user': data.get("email", None),
+                'domain': get_current_site(self.context['request']).domain,
+                'token': token,
+            })
+        email.send()
         return {"email": data.get('email'), "token": token}
 
 
