@@ -1,16 +1,22 @@
 from django.http import HttpResponse
+from rest_framework.exceptions import AuthenticationFailed
+
 from authors.apps.authentication.backends import JWTAuthentication
 
 
 def activate(request, token):
     jwt_authentication = JWTAuthentication()
-    identity = jwt_authentication.authenticate_credentials(token)
-    user = identity[0]
+    try:
+        identity = jwt_authentication.authenticate_credentials(token)
+    except AuthenticationFailed as e:
+        return HttpResponse(status=401, content=e)
 
+    user = identity[0]
     if user is not None:
         # Check is the account is already active
         if user.is_active is True:
-            return HttpResponse('Activation link has been used!')
+            return HttpResponse(status=401,
+                                content='Activation link has been used!')
 
         user.is_active = True
         user.save()
@@ -19,4 +25,4 @@ def activate(request, token):
             'Welcome to Authors\' Haven.')
     # User is not found
     else:
-        return HttpResponse('Activation link is invalid!')
+        return HttpResponse(status=401, content='Activation link is invalid!')
