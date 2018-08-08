@@ -45,7 +45,7 @@ class AuthenticationTests(APITestCase):
         :return: None
         """
         self.client.post(self.reg_url, self.data, format='json')
-        token = generate_token(self.data['user'], 0.01).decode()
+        token = generate_token(self.data, 0.01)
         time.sleep(2)
 
         self.activate_url = reverse(self.activate_url,

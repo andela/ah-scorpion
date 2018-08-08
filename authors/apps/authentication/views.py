@@ -110,7 +110,7 @@ def generate_token(identity: dict, expiry: float = 86400):
         identity=identity,
         iat=datetime.datetime.utcnow(),
         exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=expiry))
-    return jwt.encode(payload, SECRET_KEY)
+    return jwt.encode(payload, SECRET_KEY).decode()
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
