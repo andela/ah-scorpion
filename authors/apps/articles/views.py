@@ -1,4 +1,5 @@
 from django.utils.text import slugify
+import uuid
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
@@ -14,7 +15,8 @@ class ArticleList(generics.ListCreateAPIView):
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
         author = context["request"].user.pk
-        slug = slugify(context["request"].data.get("title", "No Title"))
+        slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
+        slug = slugify(slug_text)
         context["request"].data.update({
             "author": author,
             "slug": slug
@@ -26,11 +28,13 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    lookup_field = 'slug'
 
     def get_serializer_context(self):
         context = super(ArticleDetail, self).get_serializer_context()
         author = context["request"].user.pk
-        slug = slugify(context["request"].data.get("title", "No Title"))
+        slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
+        slug = slugify(slug_text)
         context["request"].data.update({
             "author": author,
             "slug": slug

@@ -63,10 +63,10 @@ class AuthenticationTests(APITestCase):
         """
         user = User.objects.get(username='olivia')
         view = ArticleDetail.as_view()
-        url = reverse('articles:article_detail', kwargs={"pk": 76})
+        url = reverse('articles:article_detail', kwargs={"slug": "not-found"})
         request = self.request_factory.delete(url)
         force_authenticate(request, user=user)
-        response = view(request, pk=76)
+        response = view(request, slug="not-found")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_non_existent(self):
@@ -75,10 +75,10 @@ class AuthenticationTests(APITestCase):
         """
         user = User.objects.get(username='olivia')
         view = ArticleDetail.as_view()
-        url = reverse('articles:article_detail', kwargs={"pk": 76})
+        url = reverse('articles:article_detail', kwargs={"slug": "not-found"})
         request = self.request_factory.put(url, self.data)
         force_authenticate(request, user=user)
-        response = view(request, pk=76)
+        response = view(request, slug="not-found")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_article_successful(self):
@@ -91,11 +91,11 @@ class AuthenticationTests(APITestCase):
         create_request = self.request_factory.post(self.articles_url, self.data)
         force_authenticate(create_request, user=user)
         create_response = list_view(create_request)
-        pk = create_response.data['id']
-        url = reverse('articles:article_detail', kwargs={"pk": pk})
+        slug = create_response.data['slug']
+        url = reverse('articles:article_detail', kwargs={"slug": slug})
         update_request = self.request_factory.put(url, self.data)
         force_authenticate(update_request, user=user)
-        update_response = detail_view(update_request, pk=pk)
+        update_response = detail_view(update_request, slug=slug)
         self.assertEqual(update_response.status_code, status.HTTP_200_OK)
 
     def test_delete_article_successful(self):
@@ -108,10 +108,10 @@ class AuthenticationTests(APITestCase):
         create_request = self.request_factory.post(self.articles_url, self.data)
         force_authenticate(create_request, user=user)
         create_response = list_view(create_request)
-        pk = create_response.data['id']
-        url = reverse('articles:article_detail', kwargs={"pk": pk})
+        slug = create_response.data['slug']
+        url = reverse('articles:article_detail', kwargs={"slug": slug})
         update_request = self.request_factory.delete(url)
         force_authenticate(update_request, user=user)
-        update_response = detail_view(update_request, pk=pk)
+        update_response = detail_view(update_request, slug=slug)
         self.assertEqual(update_response.status_code, status.HTTP_204_NO_CONTENT)
 
