@@ -1,22 +1,20 @@
 import re
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from .models import User
-from django.http import HttpResponse
-from .backends import JWTAuthentication
-
-from django.contrib.auth.tokens import default_token_generator
 
 
 def password_validator(password):
     password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)"
                                   r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
-        raise serializers.ValidationError("Password invalid, Password must be 8 characters long, "
-                                          "include numbers and letters and have no spaces")
+        raise serializers.ValidationError(
+            "Password invalid, Password must be 8 characters long, "
+            "include numbers and letters and have no spaces")
     return password
 
 
@@ -89,27 +87,23 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'A password is required to log in.')
 
+        # Verify that the user exists
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                'A user with this email and password was not found.')
+
+        # Verify that the user is active
+        if not user.is_active:
+            raise serializers.ValidationError(
+                'Please verify your email address to activate account')
+
         # The `authenticate` method is provided by Django and handles checking
         # for a user that matches this email/password combination. Notice how
         # we pass `email` as the `username` value. Remember that, in our User
         # model, we set `USERNAME_FIELD` as `email`.
         user = authenticate(username=email, password=password)
-
-        # If no user was found matching this email/password combination then
-        # `authenticate` will return `None`. Raise an exception in this case.
-        if user is None:
-            raise serializers.ValidationError(
-                'A user with this email and password was not found.')
-
-        # Django provides a flag on our `User` model called `is_active`. The
-        # purpose of this flag to tell us whether the user has been banned
-        # or otherwise deactivated. This will almost never be the case, but
-        # it is worth checking for. Raise an exception in this case.
-        if not user.is_active:
-            raise serializers.ValidationError(
-                'This user has been deactivated.'
-            )
-
         # modified this method to return the User object
         return user
 
@@ -208,4 +202,5 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
 class SocialAuthSerializer(serializers.Serializer):
     """Serializers social_auth requests"""
     provider = serializers.CharField(max_length=255, required=True)
-    access_token = serializers.CharField(max_length=1024, required=True, trim_whitespace=True)
+    access_token = serializers.CharField(max_length=1024, required=True,
+                                         trim_whitespace=True)

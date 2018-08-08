@@ -48,7 +48,8 @@ class AuthenticationTests(APITestCase):
         self.data['username'] = " "
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
-            response.data['errors']['username'][0], "This field may not be blank.")
+            response.data['errors']['username'][0],
+            "This field may not be blank.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_weak_password(self):
@@ -59,7 +60,8 @@ class AuthenticationTests(APITestCase):
         self.data['password'] = "1234"
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(response.data['errors']['password'][0],
-                         "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces")
+                         "Password invalid, Password must be 8 characters long,"
+                         " include numbers and letters and have no spaces")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_email_wrong_format(self):
