@@ -14,11 +14,9 @@ class AuthenticationTests(APITestCase):
         Data for the tests
         """
         self.data = {
-            "user": {
                 "username": "Jacob",
                 "email": "jake@jake.jake",
                 "password": "jakejake23"
-            }
         }
         # Set up the registration url.
         self.reg_url = reverse('authentication:reg')
@@ -50,7 +48,7 @@ class AuthenticationTests(APITestCase):
 
         self.client.post(self.reg_url, self.data, format='json')
 
-        token = generate_token(self.data['user'], 0.01).decode()
+        token = generate_token(self.data, 0.01)
         time.sleep(2)
 
         self.activate_url = reverse(self.activate_url,
@@ -95,7 +93,6 @@ class AuthenticationTests(APITestCase):
         # register dummy user and get token
         response = self.client.post(self.reg_url, self.data, format='json')
         token = list(response.__dict__['context'])[0]["token"]
-
         self.activate_url = reverse(self.activate_url,
                                     kwargs={'token': token})
 
