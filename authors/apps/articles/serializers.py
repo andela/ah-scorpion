@@ -12,7 +12,6 @@ class ArticleSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
     dislikes = serializers.SerializerMethodField(method_name='get_dislikes_count')
 
-    
     # These are important for displaying the ratings
     averageRating = serializers.SerializerMethodField()
     ratingsCount = serializers.SerializerMethodField()

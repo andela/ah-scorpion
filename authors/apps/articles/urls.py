@@ -12,7 +12,6 @@ urlpatterns = [
     path('<str:slug>/dislike/', views.DislikeArticle.as_view(), name='dislike_article'),
     path('<str:slug>/ratings', include('authors.apps.ratings.urls',
                                        namespace='ratings'))
-
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
