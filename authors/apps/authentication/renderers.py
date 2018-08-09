@@ -32,7 +32,6 @@ class UserJSONRenderer(JSONRenderer):
                 errors = dict(errors=dict(detail=errors))
                 return super(UserJSONRenderer, self).render(errors)
 
-<<<<<<< HEAD
         try:
             confirm_user = data['email']
             user_db = User.objects.get(email=confirm_user)
@@ -75,20 +74,3 @@ class EmailJSONRenderer(JSONRenderer):
             'Message':
             "Please confirm your email address for further instruction."
         })
-=======
-        # checks if user is active
-        # sends message is user is not activated
-        confirm_user = data['email']
-        user_db = User.objects.get(email=confirm_user)
-        if user_db.is_active is False:
-            return json.dumps({
-                'Message':
-                "Please confirm your email address to complete the registration"
-            })
-        else:
-            token = generate_token(data)
-            data['token'] = token
-
-        # Finally, we can render our data under the "user" namespace.
-        return json.dumps({'user': data})
->>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
