@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,6 +41,7 @@ INSTALLED_APPS = [
 
     'authors.apps.authentication',
     'authors.apps.articles.apps.ArticlesConfig',
+    'authors.apps.comments.apps.CommentsConfig',
     'authors.apps.core',
     'authors.apps.profiles',
 ]
@@ -100,19 +100,19 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':
-        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME':
-        'django.contrib.auth.password_validation.MinimumLengthValidator',
+            'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
         'NAME':
-        'django.contrib.auth.password_validation.CommonPasswordValidator',
+            'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
         'NAME':
-        'django.contrib.auth.password_validation.NumericPasswordValidator',
+            'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -189,10 +189,10 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_USER_FIELDS = ['email', 'username']
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_KEY =  os.environ["SCORPION_FB_KEY"]
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ["SCORPION_FB_KEY"]
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ["SCORPION_FB_SECRET"]
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'username']
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ["SCORPION_GOOGLE_KEY"]
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET  = os.environ["SCORPION_GOOGLE_SECRET"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ["SCORPION_GOOGLE_SECRET"]
