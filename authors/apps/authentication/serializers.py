@@ -120,7 +120,7 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.')
+                'email or password used is invalid')
 
         # Verify that the user is active
         if not user.is_active:
@@ -135,7 +135,8 @@ class LoginSerializer(serializers.Serializer):
         # modified this method to return the User object
 
         if user is None:
-            raise serializers.ValidationError('Invalid email or password')
+            raise serializers.ValidationError(
+                'email or password used is invalid')
 
         return user
 

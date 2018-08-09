@@ -133,7 +133,7 @@ class AuthenticationTests(APITestCase):
             },
             format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
-                         'A user with this email and password was not found.')
+                         'email or password used is invalid')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
         # Login the user with wrong password
@@ -145,7 +145,7 @@ class AuthenticationTests(APITestCase):
             format='json')
 
         self.assertEqual(login_password_response.data['errors']['error'][0],
-                         'A user with this email and password was not found.')
+                         'email or password used is invalid')
         self.assertEqual(login_password_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
 
@@ -160,7 +160,7 @@ class AuthenticationTests(APITestCase):
             },
             format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
-                         'A user with this email and password was not found.')
+                         'email or password used is invalid')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
 
