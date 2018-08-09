@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 import datetime
 
 import jwt
 import requests
+=======
+import jwt
+import json
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
+<<<<<<< HEAD
 from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, GenericAPIView
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -24,6 +30,27 @@ from .serializers import (LoginSerializer, ForgotPasswordSerializers,
                           ResetPasswordDoneSerializers, SocialAuthSerializer)
 from authors.apps.core.e_mail import SendEmail
 from authors.apps.core.token import generate_token
+=======
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.mixins import CreateModelMixin
+
+from authors.apps.authentication.models import User
+from .renderers import UserJSONRenderer
+from .serializers import (
+    LoginSerializer,
+    ForgotPasswordSerializers,
+    RegistrationSerializer,
+    UserSerializer,
+    ResetPasswordDoneSerializers,
+)
+from authors.apps.core.token import generate_token
+from authors.apps.core.e_mail import SendEmail
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
 
 
 class RegistrationAPIView(generics.CreateAPIView):
@@ -75,7 +102,11 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
     permission_classes = (AllowAny, )
+<<<<<<< HEAD
     renderer_classes = (EmailJSONRenderer, )
+=======
+    # renderer_classes = (UserJSONRenderer, )
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
     serializer_class = ForgotPasswordSerializers
 
     def post(self, request, *args, **kwargs):
@@ -106,6 +137,7 @@ class ResetPasswordDoneAPIView(generics.UpdateAPIView):
         response = {"Message": "You have successfully reset your password"}
 
         return Response(response, status=status.HTTP_201_CREATED)
+<<<<<<< HEAD
 
 
 class SocialAuth(generics.CreateAPIView):
@@ -207,3 +239,5 @@ class SocialAuth(generics.CreateAPIView):
         output['bio'] = serializer.instance.bio
         output['image'] = get_image_url(self)
         return Response(output, status=status.HTTP_200_OK)
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d

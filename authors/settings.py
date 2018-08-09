@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework',
+<<<<<<< HEAD
     'social_django',
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
     'authors.apps.authentication',
     'authors.apps.articles.apps.ArticlesConfig',
     'authors.apps.core',
@@ -147,8 +150,11 @@ REST_FRAMEWORK = {
     'authors.apps.core.exceptions.core_exception_handler',
     'NON_FIELD_ERRORS_KEY':
     'error',
+<<<<<<< HEAD
     'DEFAULT_PERMISSION_CLASSES':
     ('rest_framework.permissions.IsAuthenticated', ),
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
     'DEFAULT_AUTHENTICATION_CLASSES':
     ('authors.apps.authentication.backends.JWTAuthentication', ),
     'TEST_REQUEST_DEFAULT_FORMAT':

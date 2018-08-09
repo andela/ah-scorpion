@@ -46,7 +46,10 @@ class AuthenticationTests(APITestCase):
         """
         self.data['username'] = " "
         response = self.client.post(self.reg_url, self.data, format='json')
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
         self.assertEqual(response.data['errors']['username'][0],
                          "This field may not be blank.")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -93,7 +96,10 @@ class AuthenticationTests(APITestCase):
             "email": "jake@jake.jake",
             "password": "jakejake23"
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
         response = self.client.post(self.reg_url, test_user, format='json')
         # Register the user a second time
         response = self.client.post(self.reg_url, test_user, format='json')
@@ -127,10 +133,18 @@ class AuthenticationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Login the user with wrong email
         login_response = self.client.post(
+<<<<<<< HEAD
             self.login_url, {
                 "email": "jake@.jake",
                 "password": "jakejake23"
             },
+=======
+            self.login_url,
+            {"user": {
+                "email": "jake@.jake",
+                "password": "jakejake23"
+            }},
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
             format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
@@ -138,12 +152,21 @@ class AuthenticationTests(APITestCase):
                          status.HTTP_400_BAD_REQUEST)
         # Login the user with wrong password
         login_password_response = self.client.post(
+<<<<<<< HEAD
             self.login_url, {
                 "email": "jake@.jake",
                 "password": "jake"
             },
             format='json')
 
+=======
+            self.login_url,
+            {"user": {
+                "email": "jake@.jake",
+                "password": "jake"
+            }},
+            format='json')
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
         self.assertEqual(login_password_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
         self.assertEqual(login_password_response.status_code,
@@ -154,10 +177,18 @@ class AuthenticationTests(APITestCase):
         Test that a user who is not registered cannot login
         """
         login_response = self.client.post(
+<<<<<<< HEAD
             self.login_url, {
                 "email": "jake@.jake",
                 "password": "jakejake23"
             },
+=======
+            self.login_url,
+            {"user": {
+                "email": "jake@.jake",
+                "password": "jakejake23"
+            }},
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
             format='json')
         self.assertEqual(login_response.data['errors']['error'][0],
                          'A user with this email and password was not found.')
@@ -190,6 +221,7 @@ class AuthenticationTests(APITestCase):
         """
         response = self.client.get(self.current_user_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+<<<<<<< HEAD
 
     def test_invalid_credential(self):
         """
@@ -210,3 +242,5 @@ class AuthenticationTests(APITestCase):
             format='json')
         self.assertEqual(login_response.status_code,
                          status.HTTP_400_BAD_REQUEST)
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d

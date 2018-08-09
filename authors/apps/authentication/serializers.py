@@ -20,8 +20,13 @@ def password_validator(password):
                                   r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
         raise serializers.ValidationError(
+<<<<<<< HEAD
             "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces"
         )
+=======
+            "Password invalid, Password must be 8 characters long, "
+            "include numbers and letters and have no spaces")
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
     return password
 
 
@@ -68,10 +73,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         # import generate_token
         # 'generate_token' is imported to prevent import error
+<<<<<<< HEAD
         from authors.apps.core.token import generate_token
         from authors.apps.core.e_mail import SendEmail
         from django.contrib.sites.shortcuts import get_current_site
         from authors.settings import EMAIL_HOST_NAME
+=======
+        from .views import generate_token
+        from authors.apps.core.e_mail import SendEmail
+        from django.contrib.sites.shortcuts import get_current_site
+        from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
 
         email = SendEmail(
             mail_subject="Activate Authors' Haven account.",
@@ -112,6 +124,7 @@ class LoginSerializer(serializers.Serializer):
         if password is None:
             raise serializers.ValidationError(
                 'A password is required to log in.')
+<<<<<<< HEAD
 
         # Verify that the user exists
         try:
@@ -124,6 +137,8 @@ class LoginSerializer(serializers.Serializer):
         if not user.is_active:
             raise serializers.ValidationError(
                 'Please verify your email address to activate account')
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
 
         # The `authenticate` method is provided by Django and handles checking
         # for a user that matches this email/password combination. Notice how
@@ -133,7 +148,23 @@ class LoginSerializer(serializers.Serializer):
         # modified this method to return the User object
 
         if user is None:
+<<<<<<< HEAD
             raise serializers.ValidationError('Invalid email or password')
+=======
+            raise serializers.ValidationError(
+                'A user with this email or password was not found.')
+
+        # Django provides a flag on our `User` model called `is_active`. The
+        # purpose of this flag to tell us whether the user has been banned
+        # or otherwise deactivated. This will almost never be the case, but
+        # it is worth checking for. Raise an exception in this case.
+        if not user.is_active:
+            raise serializers.ValidationError(
+                'This user has been deactivated.')
+
+        # modified this method to return the User object
+        # token = generate_token(data)
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
         return user
 
 
@@ -195,7 +226,10 @@ class ForgotPasswordSerializers(serializers.Serializer):
     def validate(self, data):
         # validates and checks if the user exist in th database
         # if not raises a validation error
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
         user = User.objects.filter(email=data.get('email', None)).first()
         if user is None:
             raise serializers.ValidationError(
@@ -222,7 +256,10 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
     # email is required to check the token
     new_password = serializers.CharField(
         max_length=128, min_length=8, write_only=True)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
     reset_token = serializers.CharField(max_length=128)
     email = serializers.CharField(max_length=255)
 
@@ -239,6 +276,7 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
         user.set_password(data.get('new_password', None))
         user.save()
         return data
+<<<<<<< HEAD
 
 
 class SocialAuthSerializer(serializers.Serializer):
@@ -246,3 +284,5 @@ class SocialAuthSerializer(serializers.Serializer):
     provider = serializers.CharField(max_length=255, required=True)
     access_token = serializers.CharField(
         max_length=1024, required=True, trim_whitespace=True)
+=======
+>>>>>>> 6252091f7c17e7ffa9e1d9fb87ce196f3c34001d
