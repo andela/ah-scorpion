@@ -237,7 +237,7 @@ Authentication optional, returns a Profile
 
 ### Follow user
 
-`POST /api/v1/profiles/:username/follow`
+`PUT /api/v1/profiles/:username/follow`
 
 Authentication required, returns a Profile
 
@@ -248,6 +248,22 @@ No additional parameters required
 `DELETE /api/v1/profiles/:username/follow`
 
 Authentication required, returns a Profile
+
+No additional parameters required
+
+### User To Get Their Followers
+
+`GET /api/v1/profiles/followers/`
+
+Authentication required, returns Profiles of users who are following you
+
+No additional parameters required
+
+### User To Get Who They Are Following
+
+`GET /api/v1/profiles/following/`
+
+Authentication required, returns Profiles of users you are following
 
 No additional parameters required
 
@@ -302,7 +318,7 @@ No authentication required, will return single article
 Example request body:
 
 ```source-json
-{ 
+{
     "title": "How to train your dragon",
     "description": "Ever wonder how?",
     "body": "You have to believe",
@@ -389,7 +405,7 @@ No additional parameters required
 
 ### Configuring environment variables
 
-* See the **.env-sample** file for the required environment variables needed to 
+* See the **.env-sample** file for the required environment variables needed to
 setup the application
 * Use this info to create a .env file
 * Run `source .env` to initialize the environment variables
