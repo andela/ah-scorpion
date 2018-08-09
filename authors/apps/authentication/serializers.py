@@ -101,6 +101,8 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(max_length=128, write_only=True)
+    bio = serializers.CharField(max_length=128, read_only=True)
+    image = models.ImageField(max_length=254, read_only)
 
     def validate(self, data):
         # The `validate` method is where we make sure that the current
