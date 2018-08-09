@@ -76,14 +76,14 @@ class FollowingTests(APITestCase):
         # Follow the first user.
         follow_url = reverse(
         'profiles:follow_user', args=['sam'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['username'], "sam")
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
         # Follow the second user.
         follow_url = reverse(
         'profiles:follow_user', args=['zack'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['username'], "zack")
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
@@ -99,14 +99,14 @@ class FollowingTests(APITestCase):
         # Unfollow the first user.
         follow_url = reverse(
         'profiles:follow_user', args=['sam'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['username'], "sam")
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
         # Unfollow the second user.
         follow_url = reverse(
         'profiles:follow_user', args=['zack'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['username'], "zack")
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
@@ -118,14 +118,14 @@ class FollowingTests(APITestCase):
         # Follow the first user.
         follow_url = reverse(
         'profiles:follow_user', args=['sam'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['detail'], "Authentication credentials were not provided.")
         self.assertEqual(response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
         # Follow the second user.
         follow_url = reverse(
         'profiles:follow_user', args=['detail'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['detail'], "Authentication credentials were not provided.")
         self.assertEqual(response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
@@ -137,14 +137,14 @@ class FollowingTests(APITestCase):
         # Unfollow the first user.
         follow_url = reverse(
         'profiles:follow_user', args=['sam'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['detail'], "Authentication credentials were not provided.")
         self.assertEqual(response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
         # Unfollow the second user.
         follow_url = reverse(
         'profiles:follow_user', args=['detail'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['detail'], "Authentication credentials were not provided.")
         self.assertEqual(response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
@@ -158,14 +158,14 @@ class FollowingTests(APITestCase):
         # Follow themselves.
         follow_url = reverse(
         'profiles:follow_user', args=['Jacob'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['errors'][0], 'You cannot follow yourself')
         self.assertEqual(response.status_code,
                          status.HTTP_400_BAD_REQUEST)
         # Unfollow themselves.
         follow_url = reverse(
         'profiles:follow_user', args=['Jacob'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['errors'][0], "You cannot unfollow yourself")
         self.assertEqual(response.status_code,
                          status.HTTP_400_BAD_REQUEST)
@@ -179,14 +179,14 @@ class FollowingTests(APITestCase):
         # Follow a non-existent user.
         follow_url = reverse(
         'profiles:follow_user', args=['ruth'])
-        response = self.client.put(follow_url,format='json')
+        response = self.client.put(follow_url, format='json')
         self.assertEqual(response.data['detail'], 'Not found.')
         self.assertEqual(response.status_code,
                          status.HTTP_404_NOT_FOUND)
         # Unfollow a non-existent user.
         follow_url = reverse(
         'profiles:follow_user', args=['ruth'])
-        response = self.client.delete(follow_url,format='json')
+        response = self.client.delete(follow_url, format='json')
         self.assertEqual(response.data['detail'], "Not found.")
         self.assertEqual(response.status_code,
                          status.HTTP_404_NOT_FOUND)
@@ -200,14 +200,14 @@ class FollowingTests(APITestCase):
         # Check followers.
         followers_url = reverse(
         'profiles:followers')
-        response = self.client.get(followers_url,format='json')
+        response = self.client.get(followers_url, format='json')
         self.assertEqual(response.data, [])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
         # Check following.
         following_url = reverse(
         'profiles:following')
-        response = self.client.get(following_url,format='json')
+        response = self.client.get(following_url, format='json')
         self.assertEqual(response.data, [])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)

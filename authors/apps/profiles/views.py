@@ -7,9 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from authors.apps.authentication.models import User
-from authors.apps.profiles.renderers import ProfileJSONRenderer, FollowersJSONRenderer
-from authors.apps.profiles.renderers import FollowingJSONRenderer
-
+from authors.apps.profiles.renderers import ProfileJSONRenderer, FollowersJSONRenderer, FollowingJSONRenderer
 from authors.apps.profiles.serializers import ProfileSerializer
 
 
