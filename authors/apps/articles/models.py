@@ -26,9 +26,17 @@ class Article(models.Model):
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     dislikes = models.ManyToManyField(
         User, related_name='dislikes', blank=True)
+    tagList = ArrayField(models.CharField(max_length=200), null=True,
+                         blank=True)
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               db_column='author')
+
+    favorited = models.ManyToManyField(User, related_name='favorited',
+                                       blank=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ('title', )
+        ordering = ('title',)
