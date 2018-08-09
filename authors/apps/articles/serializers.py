@@ -10,8 +10,46 @@ class ArticleSerializer(serializers.ModelSerializer):
     )
 
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
-    dislikes = serializers.SerializerMethodField(
-        method_name='get_dislikes_count')
+    dislikes = serializers.SerializerMethodField(method_name='get_dislikes_count')
+
+    
+    # These are important for displaying the ratings
+    averageRating = serializers.SerializerMethodField()
+    ratingsCount = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_averageRating(article):
+        """
+        Calculates weighted average rating.
+        :param article: The article whose ratings we are calculating
+        :return: None if no one has rated, The weighted average to 2 decimal
+        places
+        :rtype: float or None
+        """
+        all_ratings = article.ratings.all().count()
+        fives = article.ratings.filter(stars=5).count()
+        fours = article.ratings.filter(stars=4).count()
+        threes = article.ratings.filter(stars=3).count()
+        twos = article.ratings.filter(stars=2).count()
+        ones = article.ratings.filter(stars=1).count()
+
+        if all_ratings < 1:
+            return None
+        else:
+            weighted_total = (5 * fives) + (4 * fours) + (3 * threes) + (
+                        2 * twos) + (1 * ones)
+            weighted_average = weighted_total / all_ratings
+            return round(weighted_average, 2)
+
+    @staticmethod
+    def get_ratingsCount(article):
+        """
+        Method for getting the number of people who have rated.
+        :param article: The article to be rated
+        :return:
+        :rtype: int
+        """
+        return article.ratings.all().count()
 
     class Meta:
         model = Article
