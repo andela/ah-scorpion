@@ -13,6 +13,8 @@ urlpatterns = [
         '<str:slug>/dislike/',
         views.DislikeArticle.as_view(),
         name='dislike_article'),
+    path('<str:slug>/favorite/', views.FavoriteArticle.as_view(),
+         name='article_favorite'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
