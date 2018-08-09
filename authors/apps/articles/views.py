@@ -31,7 +31,7 @@ class ArticleList(generics.ListCreateAPIView):
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'slug'
 
     def get_serializer_context(self):
@@ -198,6 +198,6 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         else:
             # Returns a message that the user has already favourited article
             response = {
-                "message": "You have not already marked "
+                "message": "You have not marked "
                            "this article as a favourite"}
             return Response(response, status=status.HTTP_200_OK)
