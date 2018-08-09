@@ -2,9 +2,9 @@
 from django.contrib.auth import get_user_model
 
 TEST_USER = {
-        "email": "email@mail.com",
-        "password": "Password123",
-        "username": "User",
+    "email": "email@mail.com",
+    "password": "Password123",
+    "username": "User",
 }
 
 

@@ -16,18 +16,19 @@ class ProfileRetrieveAPIView(RetrieveAPIView):
     This class get's the user's profile from the database according to the
     username given in the URL
     """
-    permission_classes = (AllowAny,)
-    renderer_classes = (ProfileJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (ProfileJSONRenderer, )
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
     lookup_field = ("username")
+
 
 class FollowUserRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     """
     This class updates the follow table when a one user follows/unfollows another.
     """
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (ProfileJSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+    renderer_classes = (ProfileJSONRenderer, )
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
     lookup_field = ("username")
@@ -37,7 +38,7 @@ class FollowUserRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         Method used in following users
         """
         current_user = self.request.user
-        followed_user= self.get_object()
+        followed_user = self.get_object()
         # A user cannot follow themselves.
         if current_user == followed_user:
             raise ValidationError('You cannot follow yourself')
@@ -62,12 +63,13 @@ class FollowUserRetrieveAPIView(RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(unfollowed_user)
         return Response(serializer.data)
 
+
 class FollowersListAPIView(ListAPIView):
     """
     This class gets a user's followers and those he/she is following
     """
-    renderer_classes = (FollowersJSONRenderer,)
-    permission_classes = (IsAuthenticated,)
+    renderer_classes = (FollowersJSONRenderer, )
+    permission_classes = (IsAuthenticated, )
     serializer_class = ProfileSerializer
 
     def get_queryset(self):
@@ -77,12 +79,13 @@ class FollowersListAPIView(ListAPIView):
         """
         return self.request.user.followers
 
+
 class UserFollowingListAPIView(ListAPIView):
     """
     This class gets a user's followers and those he/she is following
     """
-    renderer_classes = (FollowingJSONRenderer,)
-    permission_classes = (IsAuthenticated,)
+    renderer_classes = (FollowingJSONRenderer, )
+    permission_classes = (IsAuthenticated, )
     serializer_class = ProfileSerializer
 
     def get_queryset(self):

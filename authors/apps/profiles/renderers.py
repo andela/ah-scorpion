@@ -26,9 +26,7 @@ class ProfileJSONRenderer(JSONRenderer):
                 return super(ProfileJSONRenderer, self).render(data)
             else:
                 # here, the errors key was not found and will be added manually
-                errors = dict(errors=
-                              dict(detail=errors)
-                              )
+                errors = dict(errors=dict(detail=errors))
                 return super(ProfileJSONRenderer, self).render(errors)
 
         # if bio or image is an empty string, set them to None so that they
@@ -39,9 +37,8 @@ class ProfileJSONRenderer(JSONRenderer):
             data['image'] = None
 
         # Finally, we can render our data under the "profile" namespace.
-        return json.dumps({
-            'profile': data
-        })
+        return json.dumps({'profile': data})
+
 
 class FollowersJSONRenderer(JSONRenderer):
     charset = 'utf-8'
@@ -49,15 +46,12 @@ class FollowersJSONRenderer(JSONRenderer):
     def render(self, data, media_type=None, renderer_context=None):
 
         # Render our data under the "followers" namespace.
-        return json.dumps({
-            'followers': data
-        })
+        return json.dumps({'followers': data})
+
 
 class FollowingJSONRenderer(JSONRenderer):
     charset = 'utf-8'
 
     def render(self, data, media_type=None, renderer_context=None):
         # Render our data under the "followers" namespace.
-        return json.dumps({
-            'following': data
-        })
+        return json.dumps({'following': data})

@@ -6,6 +6,23 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from .models import User
+from django.http import HttpResponse
+from .backends import JWTAuthentication
+
+from django.contrib.auth.tokens import default_token_generator
+from authors.apps.core.e_mail import SendEmail
+from django.contrib.sites.shortcuts import get_current_site
+from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
+
+
+def password_validator(password):
+    password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)"
+                                  r"(?=.*[a-z])(?!.*\s).*$")
+    if not bool(password_pattern.match(password)):
+        raise serializers.ValidationError(
+            "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces"
+        )
+    return password
 
 
 def password_validator(password):
@@ -54,10 +71,29 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'username', 'password', 'bio', 'image']
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
+
+        # import generate_token
+        # 'generate_token' is imported to prevent import error
+        from authors.apps.core.token import generate_token
+        from authors.apps.core.e_mail import SendEmail
+        from django.contrib.sites.shortcuts import get_current_site
+        from authors.settings import EMAIL_HOST_NAME
+
+        email = SendEmail(
+            mail_subject="Activate Authors' Haven account.",
+            from_email=EMAIL_HOST_NAME,
+            to=validated_data["email"],
+            template='verification_email.html',
+            content={
+                'user': validated_data,
+                'domain': get_current_site(self.context["request"]).domain,
+                'token': generate_token(validated_data),
+            })
+        email.send()
         return User.objects.create_user(**validated_data)
 
 
@@ -65,6 +101,8 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=255)
     username = serializers.CharField(max_length=255, read_only=True)
     password = serializers.CharField(max_length=128, write_only=True)
+    bio = serializers.CharField(max_length=128, read_only=True)
+    image = serializers.ImageField(max_length=254, read_only=True)
 
     def validate(self, data):
         # The `validate` method is where we make sure that the current
@@ -92,7 +130,7 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.')
+                'email or password used is invalid')
 
         # Verify that the user is active
         if not user.is_active:
@@ -105,6 +143,11 @@ class LoginSerializer(serializers.Serializer):
         # model, we set `USERNAME_FIELD` as `email`.
         user = authenticate(username=email, password=password)
         # modified this method to return the User object
+
+        if user is None:
+            raise serializers.ValidationError(
+                'email or password used is invalid')
+
         return user
 
 
@@ -166,6 +209,7 @@ class ForgotPasswordSerializers(serializers.Serializer):
     def validate(self, data):
         # validates and checks if the user exist in th database
         # if not raises a validation error
+
         user = User.objects.filter(email=data.get('email', None)).first()
         if user is None:
             raise serializers.ValidationError(
@@ -173,6 +217,18 @@ class ForgotPasswordSerializers(serializers.Serializer):
 
         # genetate token for user
         token = default_token_generator.make_token(user)
+
+        email = SendEmail(
+            mail_subject="Confirmation of Password reset",
+            from_email=EMAIL_HOST_NAME,
+            to=data.get('email', None),
+            template='reset_password.html',
+            content={
+                'user': data.get("email", None),
+                'domain': get_current_site(self.context['request']).domain,
+                'token': token,
+            })
+        email.send()
 
         return {"email": data.get('email'), "token": token}
 
@@ -202,5 +258,5 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
 class SocialAuthSerializer(serializers.Serializer):
     """Serializers social_auth requests"""
     provider = serializers.CharField(max_length=255, required=True)
-    access_token = serializers.CharField(max_length=1024, required=True,
-                                         trim_whitespace=True)
+    access_token = serializers.CharField(
+        max_length=1024, required=True, trim_whitespace=True)

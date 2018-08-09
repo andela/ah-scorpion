@@ -1,6 +1,5 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 
 
@@ -84,7 +83,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     image = models.CharField(max_length=512, default="")
 
     # User following field/join table
-    follows = models.ManyToManyField('self',related_name='followers', symmetrical=False)
+    follows = models.ManyToManyField(
+        'self', related_name='followers', symmetrical=False)
 
     # More fields required by Django when specifying a custom user model.
 

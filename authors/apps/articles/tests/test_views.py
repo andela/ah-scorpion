@@ -14,25 +14,24 @@ class AuthenticationTests(APITestCase):
         Data for the tests
         """
         self.data = {
-
             "title": "Be a python coder in three weeks without a hassle",
             "description": "Are you ready?",
             "body": "It takes grit",
             "tagList": ["javscript", "python"],
             "images": ["image1", "image2"]
-
         }
         # Set up the registration url.
         self.articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
-        User.objects.create(username='olivia', email='olivia@gmail.com', password='1232444nm')
+        User.objects.create(
+            username='olivia', email='olivia@gmail.com', password='1232444nm')
 
     def test_create_without_login(self):
         """
         Test that a user can't create an article without authorisation.
         """
-        response = self.client.post(self.articles_url, self.data,
-                                    format='json')
+        response = self.client.post(
+            self.articles_url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_article_successfully(self):
@@ -41,7 +40,8 @@ class AuthenticationTests(APITestCase):
         """
         user = User.objects.get(username='olivia')
         view = ArticleList.as_view()
-        request = self.request_factory.post(self.articles_url, self.data, format='json')
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
         force_authenticate(request, user=user)
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -52,7 +52,8 @@ class AuthenticationTests(APITestCase):
         """
         user = User.objects.get(username='olivia')
         view = ArticleList.as_view()
-        request = self.request_factory.post(self.articles_url, {}, format='json')
+        request = self.request_factory.post(
+            self.articles_url, {}, format='json')
         force_authenticate(request, user=user)
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -88,7 +89,8 @@ class AuthenticationTests(APITestCase):
         user = User.objects.get(username='olivia')
         list_view = ArticleList.as_view()
         detail_view = ArticleDetail.as_view()
-        create_request = self.request_factory.post(self.articles_url, self.data)
+        create_request = self.request_factory.post(self.articles_url,
+                                                   self.data)
         force_authenticate(create_request, user=user)
         create_response = list_view(create_request)
         slug = create_response.data['slug']
@@ -105,7 +107,8 @@ class AuthenticationTests(APITestCase):
         user = User.objects.get(username='olivia')
         list_view = ArticleList.as_view()
         detail_view = ArticleDetail.as_view()
-        create_request = self.request_factory.post(self.articles_url, self.data)
+        create_request = self.request_factory.post(self.articles_url,
+                                                   self.data)
         force_authenticate(create_request, user=user)
         create_response = list_view(create_request)
         slug = create_response.data['slug']
@@ -113,7 +116,8 @@ class AuthenticationTests(APITestCase):
         update_request = self.request_factory.delete(url)
         force_authenticate(update_request, user=user)
         update_response = detail_view(update_request, slug=slug)
-        self.assertEqual(update_response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(update_response.status_code,
+                         status.HTTP_204_NO_CONTENT)
 
 
 class LikeDislikeTests(APITestCase):
@@ -122,18 +126,17 @@ class LikeDislikeTests(APITestCase):
         Data for the tests
         """
         data = {
-
             "title": "Be a python coder in three weeks without a hassle",
             "description": "Are you ready?",
             "body": "It takes grit",
             "tagList": ["javscript", "python"],
             "images": ["image1", "image2"]
-
         }
 
         articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
-        User.objects.create(username='olivia', email='olivia@gmail.com', password='1232444nm')
+        User.objects.create(
+            username='olivia', email='olivia@gmail.com', password='1232444nm')
 
         view = ArticleList.as_view()
         user = User.objects.get(username='olivia')
@@ -144,8 +147,8 @@ class LikeDislikeTests(APITestCase):
 
         # set up like and dislike urls
         self.likes_url = reverse('articles:like_article', args=[self.slug])
-        self.dislikes_url = reverse('articles:dislike_article', args=[self.slug])
-        
+        self.dislikes_url = reverse(
+            'articles:dislike_article', args=[self.slug])
 
     def test_like_without_auth(self):
         """
@@ -160,7 +163,7 @@ class LikeDislikeTests(APITestCase):
         """
         response = self.client.put(self.dislikes_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
     def test_successful_like(self):
         """
         Test that user can like an article successfully
@@ -171,7 +174,8 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["Message"], 'You have successfully liked this article')
+        self.assertIn(response.data["Message"],
+                      'You have successfully liked this article')
 
     def test_successful_unlike(self):
         """
@@ -191,7 +195,8 @@ class LikeDislikeTests(APITestCase):
         response = view(request, slug=self.slug)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["Message"], 'You no longer like this article')
+        self.assertIn(response.data["Message"],
+                      'You no longer like this article')
 
     def test_successful_dislike(self):
         """
@@ -203,8 +208,9 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["Message"], 'You have successfully disliked this article')
-    
+        self.assertIn(response.data["Message"],
+                      'You have successfully disliked this article')
+
     def test_successful_undislike(self):
         """
         Test that user can undislike an article successfully
@@ -223,4 +229,5 @@ class LikeDislikeTests(APITestCase):
         response = view(request, slug=self.slug)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["Message"], 'You no longer dislike this article')
+        self.assertIn(response.data["Message"],
+                      'You no longer dislike this article')
