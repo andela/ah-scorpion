@@ -196,6 +196,5 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         else:
             # Returns a message that the user has already favourited article
             response = {
-                "message": "You have not marked "
-                           "this article as a favourite"}
+                "message": "You have not marked this article as a favourite"}
             return Response(response, status=status.HTTP_200_OK)
