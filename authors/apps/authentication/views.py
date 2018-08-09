@@ -6,17 +6,19 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, GenericAPIView
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from social_core.exceptions import MissingBackend
 from social_django.utils import load_backend, load_strategy
+from rest_framework.mixins import CreateModelMixin
 
 from authors.apps.authentication.models import User
 from authors.apps.core.e_mail import SendEmail
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
-from .renderers import UserJSONRenderer
+from .renderers import UserJSONRenderer, EmailJSONRenderer
 from .serializers import (LoginSerializer, ForgotPasswordSerializers,
                           RegistrationSerializer, UserSerializer,
                           ResetPasswordDoneSerializers, SocialAuthSerializer)
@@ -27,43 +29,6 @@ class RegistrationAPIView(generics.CreateAPIView):
     permission_classes = (AllowAny, )
     renderer_classes = (UserJSONRenderer, )
     serializer_class = RegistrationSerializer
-
-    def post(self, request):
-        user = request.data
-
-        # The create serializer, validate serializer, save serializer pattern
-        # below is common and you will see it a lot throughout this course and
-        # your own work later on. Get familiar with it.
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        current_site = get_current_site(request)
-        mail_subject = "Activate Authors' Haven account."
-        message = render_to_string(
-            'verification_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'token': generate_token(user),
-            })
-        to_email = serializer.data.get("email")
-        co_name = EMAIL_HOST_NAME
-
-        email = EmailMessage(
-            mail_subject, message, from_email=co_name, to=[to_email])
-        email.send()
-
-        output = serializer.data
-        output['message'] = 'Please confirm your email address to complete ' \
-                            'the registration '
-
-        # now that a user has been created and saved, the serializer's
-        # instance attribute will be the created User object so we can get
-        # the bio and image from it.
-        output['bio'] = serializer.instance.bio
-        output['image'] = serializer.instance.image
-
-        return Response(output, status=status.HTTP_201_CREATED)
 
 
 class LoginAPIView(CreateModelMixin, generics.GenericAPIView):

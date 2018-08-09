@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from authors.apps.authentication.views import generate_token
+from authors.apps.core.token import generate_token
 
 
 class AuthenticationTests(APITestCase):
