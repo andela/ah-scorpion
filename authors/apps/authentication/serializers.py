@@ -20,8 +20,8 @@ def password_validator(password):
                                   r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
         raise serializers.ValidationError(
-            "Password invalid, Password must be 8 characters long, "
-            "include numbers and letters and have no spaces")
+            "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces"
+        )
     return password
 
 
@@ -68,10 +68,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         # import generate_token
         # 'generate_token' is imported to prevent import error
-        from .views import generate_token
+        from authors.apps.core.token import generate_token
         from authors.apps.core.e_mail import SendEmail
         from django.contrib.sites.shortcuts import get_current_site
-        from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
+        from authors.settings import EMAIL_HOST_NAME
 
         email = SendEmail(
             mail_subject="Activate Authors' Haven account.",
@@ -113,18 +113,12 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'A password is required to log in.')
 
-        # The `authenticate` method is provided by Django and handles checking
-        # for a user that matches this email/password combination. Notice how
-        # we pass `email` as the `username` value. Remember that, in our User
-        # model, we set `USERNAME_FIELD` as `email`.
-        user = authenticate(username=email, password=password)
-
         # Verify that the user exists
         try:
             user = User.objects.get(email=email)
-        except user.DoesNotExist:
+        except User.DoesNotExist:
             raise serializers.ValidationError(
-                'A user with this email or password was not found.')
+                'A user with this email and password was not found.')
 
         # Verify that the user is active
         if not user.is_active:
@@ -137,7 +131,9 @@ class LoginSerializer(serializers.Serializer):
         # model, we set `USERNAME_FIELD` as `email`.
         user = authenticate(username=email, password=password)
         # modified this method to return the User object
-        # token = generate_token(data)
+
+        if user is None:
+            raise serializers.ValidationError('Invalid email or password')
         return user
 
 

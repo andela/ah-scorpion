@@ -4,12 +4,11 @@ from django.contrib.auth import get_user_model
 TEST_USER = {
     "email": "email@mail.com",
     "password": "Password123",
-    "username": "User",
+    "username": "User"
 }
 
 
 def create_user(username="User",
-                email="email@email.com",
                 email="email@email.com",
                 password="Password123."):
     # create_user create and returns a user

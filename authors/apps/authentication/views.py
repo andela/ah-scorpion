@@ -6,21 +6,24 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, GenericAPIView
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from social_core.exceptions import MissingBackend
+from rest_framework.mixins import CreateModelMixin
 from social_django.utils import load_backend, load_strategy
 
 from authors.apps.authentication.models import User
 from authors.apps.core.e_mail import SendEmail
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
-from .renderers import UserJSONRenderer
+from .renderers import UserJSONRenderer, EmailJSONRenderer
 from .serializers import (LoginSerializer, ForgotPasswordSerializers,
                           RegistrationSerializer, UserSerializer,
                           ResetPasswordDoneSerializers, SocialAuthSerializer)
 from authors.apps.core.e_mail import SendEmail
+from authors.apps.core.token import generate_token
 
 
 class RegistrationAPIView(generics.CreateAPIView):
@@ -72,7 +75,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
     permission_classes = (AllowAny, )
-    # renderer_classes = (UserJSONRenderer, )
+    renderer_classes = (EmailJSONRenderer, )
     serializer_class = ForgotPasswordSerializers
 
     def post(self, request, *args, **kwargs):
@@ -105,7 +108,7 @@ class ResetPasswordDoneAPIView(generics.UpdateAPIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
 
-class SocialAuth(CreateAPIView):
+class SocialAuth(generics.CreateAPIView):
     """
     Allows for social signup and login using Google and Facebook
     """

@@ -1,8 +1,6 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.tokens import default_token_generator
 from .utility import TEST_USER, create_user
-from .utils import TEST_USER, create_user
-from .utility import TEST_USER, create_user
 from rest_framework import status
 from django.urls import reverse
 
@@ -42,11 +40,7 @@ class TestPasswordReset(APITestCase):
 
     def test_invalid_email(self):
         """Test user who is not in the database"""
-<<<<<<< HEAD
         EMAIL = {"email": "fake@email.com"}
-=======
-        self.EMAIL = {"email": "fake@email.com"}
->>>>>>> 6252091... [chore] Refactor authentication views
         response = self.client.post(
             reverse("authentication:reset-password"),
             self.EMAIL,

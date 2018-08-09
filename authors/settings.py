@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -38,11 +37,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework',
-<<<<<<< HEAD
     'social_django',
-
-=======
->>>>>>> 2a8e98e... [Feature #159053982] Send verification email to user on registration
     'authors.apps.authentication',
     'authors.apps.articles.apps.ArticlesConfig',
     'authors.apps.core',
@@ -73,7 +68,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
@@ -149,18 +143,16 @@ CORS_ORIGIN_WHITELIST = (
 AUTH_USER_MODEL = 'authentication.User'
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'authors.apps.core.exceptions.core_exception_handler',
-    'NON_FIELD_ERRORS_KEY': 'error',
-
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'authors.apps.authentication.backends.JWTAuthentication',
-    ),
-
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'EXCEPTION_HANDLER':
+    'authors.apps.core.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY':
+    'error',
+    'DEFAULT_PERMISSION_CLASSES':
+    ('rest_framework.permissions.IsAuthenticated', ),
+    'DEFAULT_AUTHENTICATION_CLASSES':
+    ('authors.apps.authentication.backends.JWTAuthentication', ),
+    'TEST_REQUEST_DEFAULT_FORMAT':
+    'json',
 }
 
 EMAIL_USE_TLS = True
@@ -192,10 +184,10 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_USER_FIELDS = ['email', 'username']
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_KEY =  os.environ["SCORPION_FB_KEY"]
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ["SCORPION_FB_KEY"]
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ["SCORPION_FB_SECRET"]
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'username']
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ["SCORPION_GOOGLE_KEY"]
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET  = os.environ["SCORPION_GOOGLE_SECRET"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ["SCORPION_GOOGLE_SECRET"]
