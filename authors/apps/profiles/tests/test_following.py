@@ -191,7 +191,7 @@ class FollowingTests(APITestCase):
         self.assertEqual(response.status_code,
                          status.HTTP_404_NOT_FOUND)
 
-    def test_user_can_view_followers_and_following(self):
+    def test_user_can_view_followers(self):
         """
         Test that a user can view users they are following and their followers.
         """
@@ -204,6 +204,13 @@ class FollowingTests(APITestCase):
         self.assertEqual(response.data, [])
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
+
+    def test_user_can_view_following(self):
+        """
+        Test that a user can view users they are following.
+        """
+        # Pass token of current user
+        self.client.credentials(HTTP_AUTHORIZATION=self.register_login_current_user())
         # Check following.
         following_url = reverse(
         'profiles:following')
