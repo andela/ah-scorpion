@@ -3,8 +3,6 @@ from rest_framework.test import APITestCase, APIClient
 
 
 class SocialAuthenticationTests(APITestCase):
-
-
     def setUp(self):
         """
         Setup for tests
@@ -18,8 +16,8 @@ class SocialAuthenticationTests(APITestCase):
         """
         Test request without passing the access token
         """
-        data = {"provider" : "google-oauth2"}
-        response = self.client.post(self.auth_url , data=data)
+        data = {"provider": "google-oauth2"}
+        response = self.client.post(self.auth_url, data=data)
         self.assertEqual(response.status_code, 400)
 
     def test_missing_provider(self):
@@ -27,8 +25,8 @@ class SocialAuthenticationTests(APITestCase):
         Test request without passing the provider
         """
         access_token = "EAAexjwrTz4IBAC2T3cPCtLdLS3fUGVEz9Ma37"
-        data = {"access_token" : access_token}
-        response = self.client.post(self.auth_url , data=data)
+        data = {"access_token": access_token}
+        response = self.client.post(self.auth_url, data=data)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_provider(self):
@@ -36,8 +34,8 @@ class SocialAuthenticationTests(APITestCase):
         Test giving a non-existent provider
         """
         access_token = "EAAexjwrTz4IBAC2T3cPCtLdLS3fUGVEz9Ma37"
-        data = {"access_token" : access_token, "provider" : "facebook-oauth23"}
-        response = self.client.post(self.auth_url , data=data)
+        data = {"access_token": access_token, "provider": "facebook-oauth23"}
+        response = self.client.post(self.auth_url, data=data)
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_token(self):
@@ -45,6 +43,6 @@ class SocialAuthenticationTests(APITestCase):
         Test an invalid access token
         """
         access_token = "Invalid token"
-        data = {"access_token" : access_token, "provider" : "facebook"}
-        response = self.client.post(self.auth_url , data=data)
+        data = {"access_token": access_token, "provider": "facebook"}
+        response = self.client.post(self.auth_url, data=data)
         self.assertEqual(response.status_code, 400)

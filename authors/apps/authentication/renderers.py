@@ -27,12 +27,34 @@ class UserJSONRenderer(JSONRenderer):
                 return super(UserJSONRenderer, self).render(data)
             else:
                 # here, the errors key was not found and will be added manually
-                errors = dict(errors=
-                              dict(detail=errors)
-                              )
+                errors = dict(errors=dict(detail=errors))
                 return super(UserJSONRenderer, self).render(errors)
 
         # Finally, we can render our data under the "user" namespace.
+        return json.dumps({'user': data})
+
+
+class EmailJSONRenderer(JSONRenderer):
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
+
+        errors = data.get('errors', None)
+
+        if errors is not None:
+            # As mentioned about, we will let the default JSONRenderer handle
+            # rendering errors.
+            if isinstance(errors, ReturnDict):
+                # here, the 'errors' key was found and will be used in the
+                # response
+                return super(EmailJSONRenderer, self).render(data)
+
+            else:
+                # here, the errors key was not found and will be added manually
+                errors = dict(errors=dict(detail=errors))
+                return super(EmailJSONRenderer, self).render(errors)
+
         return json.dumps({
-            'user': data
+            'Message':
+            "Please confirm your email address for further instruction."
         })

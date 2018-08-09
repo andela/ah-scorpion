@@ -28,14 +28,12 @@ class AuthenticationTests(APITestCase):
         with an invalid token
         :return: None
         """
-        self.activate_url = reverse(self.activate_url,
-                                    kwargs={'token': "hajshja"})
-        response = self.client.get(
-            self.activate_url)
+        self.activate_url = reverse(
+            self.activate_url, kwargs={'token': "hajshja"})
+        response = self.client.get(self.activate_url)
 
         assert ("Invalid token" in str(response._container))
-        self.assertEqual(response.status_code,
-                         status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_expired_token_passed(self):
         """
@@ -49,14 +47,10 @@ class AuthenticationTests(APITestCase):
         token = generate_token(self.data, 0.01)
         time.sleep(1)
 
-        self.activate_url = reverse(self.activate_url,
-                                    kwargs={'token': token
-                                            })
-        response = self.client.get(
-            self.activate_url)
+        self.activate_url = reverse(self.activate_url, kwargs={'token': token})
+        response = self.client.get(self.activate_url)
         assert ("Expired Token" in str(response._container))
-        self.assertEqual(response.status_code,
-                         status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_valid_token_passed(self):
         """
@@ -71,14 +65,11 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.reg_url, self.data, format='json')
         token = list(response.__dict__['context'])[0]["token"]
 
-        self.activate_url = reverse(self.activate_url,
-                                    kwargs={'token': token})
-        response = self.client.get(
-            self.activate_url)
+        self.activate_url = reverse(self.activate_url, kwargs={'token': token})
+        response = self.client.get(self.activate_url)
         assert ("Thank you for confirming your email address" in str(
             response._container))
-        self.assertEqual(response.status_code,
-                         status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_used_token(self):
         """
@@ -91,21 +82,16 @@ class AuthenticationTests(APITestCase):
         # register dummy user and get token
         response = self.client.post(self.reg_url, self.data, format='json')
         token = list(response.__dict__['context'])[0]["token"]
-        self.activate_url = reverse(self.activate_url,
-                                    kwargs={'token': token})
+        self.activate_url = reverse(self.activate_url, kwargs={'token': token})
 
         # Verify the user
-        self.client.get(
-            self.activate_url)
+        self.client.get(self.activate_url)
 
         # Attempt using the token again
-        response = self.client.get(
-            self.activate_url)
+        response = self.client.get(self.activate_url)
 
-        assert ("Activation link has been used!"
-                in str(response._container))
-        self.assertEqual(response.status_code,
-                         status.HTTP_401_UNAUTHORIZED)
+        assert ("Activation link has been used!" in str(response._container))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_user_not_verified(self):
         """
@@ -119,5 +105,4 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.login_url, self.data, format='json')
         assert ("Please verify your email address to activate account" in str(
             response._container))
-        self.assertEqual(response.status_code,
-                         status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

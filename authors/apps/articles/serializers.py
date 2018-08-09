@@ -10,7 +10,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     )
 
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
-    dislikes = serializers.SerializerMethodField(method_name='get_dislikes_count')
+    dislikes = serializers.SerializerMethodField(
+        method_name='get_dislikes_count')
 
     class Meta:
         model = Article
