@@ -17,6 +17,7 @@ from rest_framework.mixins import CreateModelMixin
 
 from authors.apps.authentication.models import User
 from authors.apps.core.e_mail import SendEmail
+from authors.apps.core.token import generate_token
 from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer, EmailJSONRenderer
 from .serializers import (LoginSerializer, ForgotPasswordSerializers,
