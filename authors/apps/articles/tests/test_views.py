@@ -8,7 +8,7 @@ from authors.apps.articles.views import ArticleList, ArticleDetail
 from authors.apps.authentication.models import User
 
 
-class AuthenticationTests(APITestCase):
+class ArticleTests(APITestCase):
     def setUp(self):
         """
         Data for the tests
