@@ -4,6 +4,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 
 from .models import Article
 from .serializers import ArticleSerializer
@@ -12,31 +13,41 @@ from .serializers import ArticleSerializer
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
-        author = context["request"].user.pk
-        slug_text = context["request"].data.get(
-            "title", "No Title") + " " + uuid.uuid4().hex
+
+        slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
         slug = slugify(slug_text)
-        context["request"].data.update({"author": author, "slug": slug})
+        context["request"].data.update({
+            "slug": slug
+        })
         return context
 
 
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
 
     def get_serializer_context(self):
         context = super(ArticleDetail, self).get_serializer_context()
-        author = context["request"].user.pk
-        slug_text = context["request"].data.get(
-            "title", "No Title") + " " + uuid.uuid4().hex
-        slug = slugify(slug_text)
-        context["request"].data.update({"author": author, "slug": slug})
+
+        try:
+            url_slug = self.kwargs['slug']
+        except self.kwargs.get('slug').DoesNotExist:
+            raise NotFound('Please check your url')
+
+        if context["request"].data.get("title", "No Title") == Article.objects.get(slug=url_slug).title:
+            slug = url_slug
+        else:
+            slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
+            slug = slugify(slug_text)
+        context["request"].data.update({
+            "slug": slug
+        })
         return context
 
 
@@ -49,7 +60,7 @@ class LikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         article = Article.objects.get(slug=slug)
@@ -61,7 +72,6 @@ class LikeArticle(generics.UpdateAPIView):
 
         # allows for the None option: you neither like nor dislike the article
         if user in article.likes.all():
-
             # removes the user from the list of liking users
             article.likes.remove(user.id)
 
@@ -84,7 +94,7 @@ class DislikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         article = Article.objects.get(slug=slug)
@@ -96,7 +106,6 @@ class DislikeArticle(generics.UpdateAPIView):
 
         # allows for the None option: you neither like nor dislike the article
         if user in article.dislikes.all():
-
             # removes the user from the list of disliking users
             article.dislikes.remove(user.id)
 
@@ -108,3 +117,4 @@ class DislikeArticle(generics.UpdateAPIView):
 
         response = {"Message": "You have successfully disliked this article"}
         return Response(response, status=status.HTTP_200_OK)
+
