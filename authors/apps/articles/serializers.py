@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import Article
+from ..authentication.serializers import UserSerializer
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -8,6 +9,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         required=True,
         max_length=100,
     )
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Article
@@ -15,4 +17,9 @@ class ArticleSerializer(serializers.ModelSerializer):
         lookup_url_kwarg = 'slug'
 
     def create(self, validated_data):
-        return super().create(validated_data)
+        author = self.context['request'].user
+        article = Article.objects.create(
+            author=author,
+            **validated_data
+        )
+        return article
