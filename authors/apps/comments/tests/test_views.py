@@ -11,6 +11,17 @@ from authors.apps.articles.views import ArticleList
 
 
 class CommentsTests(APITestCase):
+
+
+    from rest_framework import status
+from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import force_authenticate
+
+from authors.apps.comments.views import CommentsListCreateAPIView
+from authors.apps.authentication.models import User
+
+
+class AuthenticationTests(APITestCase):
     def setUp(self):
         """
         Data for the tests
@@ -142,3 +153,4 @@ class CommentsTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
