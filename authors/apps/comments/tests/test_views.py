@@ -79,11 +79,12 @@ class CommentsTests(APITestCase):
         """
         Test that a user can reply to a comment successfully.
         """
+        pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": self.pk})
+        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
         request = self.request_factory.post(url, data=self.sample_comment, format='json')
         force_authenticate(request, user=self.user)
-        response = comment_view(request, slug=self.slug, pk=self.pk)
+        response = comment_view(request, slug=self.slug, pk=pk)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_add_comment_child_without_parent(self):
@@ -143,70 +144,15 @@ class CommentsTests(APITestCase):
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_add_comment_child_successful(self):
+    def test_delete_comment_successful(self):
         """
-        Test that a user can reply to a comment successfully.
+        Test that a user can delete comment
         """
+        pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": self.pk})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
-        force_authenticate(request, user=self.user)
-        response = comment_view(request, slug=self.slug, pk=self.pk)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_add_comment_child_without_parent(self):
-        """
-        Test that a user can't reply to a non-existent comment.
-        """
-        comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
-        force_authenticate(request, user=self.user)
-        response = comment_view(request, slug=self.slug, pk="5463")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_comment_without_article(self):
-        """
-        Test that a user can't comment on a non-existent article.
-        """
-        comment_view = CommentsListCreateAPIView.as_view()
-        url = reverse('comments:all_comments', kwargs={"slug": '1234what'})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
-        force_authenticate(request, user=self.user)
-        response = comment_view(request, slug='1234what')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_get_comment_from_article_without_comment(self):
-        """
-        Test that a user can't get comment from an empty article.
-        """
-        comment_view = CommentsListCreateAPIView.as_view()
-        url = reverse('comments:all_comments', kwargs={"slug": 'not'})
-        request = self.request_factory.get(url)
-        force_authenticate(request, user=self.user)
-        response = comment_view(request, slug='not')
-        self.assertEqual(response.data, [])
-
-    def test_get_comments_successful(self):
-        """
-        Test that a user can get comments successfully.
-        """
-        comment_view = CommentsListCreateAPIView.as_view()
-        url = reverse('comments:all_comments', kwargs={"slug": self.slug})
-        request = self.request_factory.get(url)
-        force_authenticate(request, user=self.user)
-        response = comment_view(request, slug=self.slug)
-        self.assertIsInstance(response.data, list)
-        self.assertNotEqual(response.data, None)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_delete_non_existent(self):
-        """
-        Test that a user can't delete non-existent comment
-        """
-        comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
+        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
-        response = comment_view(request, slug=self.slug, pk="5463")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = comment_view(request, slug=self.slug, pk=pk)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
