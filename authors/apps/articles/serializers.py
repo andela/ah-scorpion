@@ -39,4 +39,3 @@ class ArticleSerializer(serializers.ModelSerializer):
         Gets the total number of dislikes for a particular article
         """
         return instance.dislikes.count()
-

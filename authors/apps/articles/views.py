@@ -115,4 +115,3 @@ class DislikeArticle(generics.UpdateAPIView):
 
         response = {"Message": "You have successfully disliked this article"}
         return Response(response, status=status.HTTP_200_OK)
-
