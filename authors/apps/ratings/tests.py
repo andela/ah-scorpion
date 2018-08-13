@@ -14,9 +14,9 @@ class RatingsTestCase(APITestCase):
         )
         self.slug = self.create_article().data['slug']
         self.client = APIClient()
-        pass
 
-    def create_user(self, email: str = 'test@email.com',
+    @staticmethod
+    def create_user(email: str = 'test@email.com',
                     username: str = 'testuser',
                     password: str = 'password12345'):
         """
