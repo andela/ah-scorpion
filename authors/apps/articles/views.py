@@ -2,14 +2,14 @@ import uuid
 
 from django.utils.text import slugify
 from rest_framework import generics, status
+from rest_framework.exceptions import NotFound
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
     IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
 
 from .models import Article
 from .serializers import ArticleSerializer
-from rest_framework.pagination import LimitOffsetPagination
 
 
 class ArticleList(generics.ListCreateAPIView):
@@ -165,7 +165,8 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             # Add user from the list of users liking the particular article
             article.favorited.add(user.id)
 
-            response = {"article": context['request'].data}
+            serializer = self.get_serializer(article)
+            response = {"article": serializer.data}
             return Response(response, status=status.HTTP_200_OK)
 
     def delete(self, request, slug):
@@ -185,15 +186,14 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             response = {"message": "The article was not found", }
             return Response(response,
                             status=status.HTTP_404_NOT_FOUND)
-        context = super(FavoriteArticle, self).get_serializer_context()
-
         user = request.user
 
         if user in article.favorited.all():
             # Remove user from the list of users liking the particular article
             article.favorited.remove(user.id)
 
-            response = {"message": context['request'].data}
+            serializer = self.get_serializer(article)
+            response = {"article": serializer.data}
             return Response(response, status=status.HTTP_200_OK)
         else:
             # Returns a message that the user has already favourited article
