@@ -25,5 +25,5 @@ urlpatterns = [
         'reset-password-done/',
         ResetPasswordDoneAPIView.as_view(),
         name='reset-password-done'),
-    path('social_auth/', SocialAuth.as_view(), name="social_auth")
+    path('users/social_auth/', SocialAuth.as_view(), name="social_auth")
 ]
