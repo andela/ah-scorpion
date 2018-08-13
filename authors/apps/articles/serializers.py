@@ -38,6 +38,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_favorite_count(instance):
         """
-        Gets the total number of dislikes for a particular article
+        Gets the number of times that a particular article has been
+        favourited
         """
         return instance.favorited.count()

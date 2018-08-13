@@ -125,7 +125,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     def post(self, request, slug):
         """
         Helps user favourite article
-        If already, return message saying that the user has already favourated
+        If already, return message saying that the user has already favourited
         Else make the user favourite article
         :param request:
         :param slug:
@@ -160,7 +160,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         """
         Helps user un-favourite article
         If already, return article
-        Else message saying that the user has not favourated article
+        Else message saying that the user has not favourited article
         :param request:
         :param slug:
         :return: article
