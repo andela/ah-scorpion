@@ -28,7 +28,7 @@ class RatingsSerializer(serializers.ModelSerializer):
         # set the article given from the context. It was set in our view
         article = self.context['article']
 
-        # If the article is not found the raise error
+        # If the article is not found then raise error
         if article is None:
             raise ValidationError('Article not found')
 
