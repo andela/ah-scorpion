@@ -75,12 +75,15 @@ class AuthenticationTests(APITestCase):
 
         response = view(request, slug)
 
+        assert ("'title': 'Be a python coder in three weeks without a "
+                "hassle'" and "'favorited': 1" in str(response.data))
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
 
         # Test trying to favourite again
         force_authenticate(request, user=user)
         response = view(request, slug)
+
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
         assert ("You have already marked this article as a favourite" in
@@ -111,6 +114,7 @@ class AuthenticationTests(APITestCase):
         force_authenticate(request, user=user)
 
         response = view(request, slug)
+
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
         assert ("You have not marked this article as a favourite" in
@@ -124,11 +128,11 @@ class AuthenticationTests(APITestCase):
         view(request, slug)
 
         # Un-favourite
+        request = self.request_factory.delete(self.favorite_url)
         force_authenticate(request, user=user)
-
         response = view(request, slug)
+
+        assert ("'title': 'Be a python coder in three weeks without a "
+                "hassle'" and "'favorited': 0" in str(response.data))
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
-
-
-
