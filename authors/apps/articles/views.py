@@ -1,6 +1,5 @@
 import uuid
 
-from django.db.models import Count
 from django.utils.text import slugify
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
@@ -9,7 +8,6 @@ from rest_framework.response import Response
 
 from .models import Article
 from .serializers import ArticleSerializer
-from django.core import serializers
 
 
 class ArticleList(generics.ListCreateAPIView):
@@ -141,7 +139,6 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             response = {"message": "The article was not found", }
             return Response(response,
                             status=status.HTTP_404_NOT_FOUND)
-        context = super(FavoriteArticle, self).get_serializer_context()
         user = request.user
 
         if user in article.favorited.all():
