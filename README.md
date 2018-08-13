@@ -45,8 +45,11 @@ The preferred JSON object to be returned by the API should be structured as foll
 ```source-json
 {
   "article": {
-    "slug": "how-to-train-your-dragon",
+    "id": 1,
     "title": "How to train your dragon",
+    "likes": 3,
+    "dislikes": 1,
+    "slug": "how-to-train-your-dragon",
     "description": "Ever wonder how?",
     "body": "It takes a Jacobian",
     "tagList": ["dragons", "training"],
@@ -67,8 +70,11 @@ The preferred JSON object to be returned by the API should be structured as foll
 ```source-json
 {
   "articles":[{
-    "slug": "how-to-train-your-dragon",
+    "id": 1,
     "title": "How to train your dragon",
+    "likes": 2,
+    "dislikes": 3,
+    "slug": "how-to-train-your-dragon",
     "description": "Ever wonder how?",
     "body": "It takes a Jacobian",
     "tagList": ["dragons", "training"],
@@ -83,9 +89,11 @@ The preferred JSON object to be returned by the API should be structured as foll
       "following": false
     }
   }, {
-
-    "slug": "how-to-train-your-dragon-2",
+    "id": 2,
     "title": "How to train your dragon 2",
+    "likes": 1,
+    "dislikes": 0,
+    "slug": "how-to-train-your-dragon-2",
     "description": "So toothless",
     "body": "It a dragon",
     "tagList": ["dragons", "training"],
@@ -201,9 +209,22 @@ Example request body:
 }
 ```
 
+### Signup/Login via social Accounts( Facebook/Google):
+
+`POST /api/v1/users/social_auth/`
+
+Example request body:
+
+```source-json
+{
+  "access_token": "<your access_token>",
+  "provider": "<facebook/google-oauth2>"
+}
+```
+
 No authentication required, returns a User
 
-Required fields: `email`, `username`, `password`
+Required fields: `access_token` and  `provider`
 
 ### Get Current User
 
