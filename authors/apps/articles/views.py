@@ -150,7 +150,6 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             response = {"message": "The article was not found", }
             return Response(response,
                             status=status.HTTP_404_NOT_FOUND)
-        context = super(FavoriteArticle, self).get_serializer_context()
         user = request.user
 
         if user in article.favorited.all():
