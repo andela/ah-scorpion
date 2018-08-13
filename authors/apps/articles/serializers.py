@@ -12,7 +12,23 @@ class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
 
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
-    dislikes = serializers.SerializerMethodField(method_name='get_dislikes_count')
+    dislikes = serializers.SerializerMethodField(
+        method_name='get_dislikes_count')
+    favorited = serializers.SerializerMethodField(
+        method_name='get_favorite_count')
+
+    class Meta:
+        model = Article
+        fields = '__all__'
+        lookup_url_kwarg = 'slug'
+
+    def create(self, validated_data):
+        author = self.context['request'].user
+        article = Article.objects.create(
+            author=author,
+            **validated_data
+        )
+        return article
 
     # These are important for displaying the ratings
     averageRating = serializers.SerializerMethodField()
@@ -52,19 +68,6 @@ class ArticleSerializer(serializers.ModelSerializer):
         """
         return article.ratings.all().count()
 
-    class Meta:
-        model = Article
-        fields = '__all__'
-        lookup_url_kwarg = 'slug'
-
-    def create(self, validated_data):
-        author = self.context['request'].user
-        article = Article.objects.create(
-            author=author,
-            **validated_data
-        )
-        return article
-
     def get_likes_count(self, instance):
         """
         Gets the total number of likes for a particular article
@@ -76,3 +79,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         Gets the total number of dislikes for a particular article
         """
         return instance.dislikes.count()
+
+    @staticmethod
+    def get_favorite_count(instance):
+        """
+        Gets the total number of dislikes for a particular article
+        """
+        return instance.favorited.count()
