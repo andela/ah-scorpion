@@ -155,6 +155,8 @@ REST_FRAMEWORK = {
     ('authors.apps.authentication.backends.JWTAuthentication', ),
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination'
 }
 
 EMAIL_USE_TLS = True
