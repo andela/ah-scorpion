@@ -119,6 +119,47 @@ class ArticleTests(APITestCase):
         self.assertEqual(update_response.status_code,
                          status.HTTP_204_NO_CONTENT)
 
+    def test_pagination(self):
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+
+        view(request)
+
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+
+        view(request)
+
+        pag_url = self.articles_url + '?limit=2&offset=0'
+        request2 = self.request_factory.get(pag_url, format='json')
+        force_authenticate(request2, user=user)
+        response = view(request2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['next'],
+            'http://testserver/api/v1/articles/?limit=2&offset=2')
+
+    def test_when_no_article_pagination(self):
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+
+        pag_url = self.articles_url + '?limit=2&offset=0'
+        request2 = self.request_factory.get(pag_url, format='json')
+        force_authenticate(request2, user=user)
+        response = view(request2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['next'], None)
+
 
 class LikeDislikeTests(APITestCase):
     def setUp(self):

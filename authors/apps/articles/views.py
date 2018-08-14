@@ -8,12 +8,14 @@ from rest_framework.exceptions import NotFound
 
 from .models import Article
 from .serializers import ArticleSerializer
+from rest_framework.pagination import LimitOffsetPagination
 
 
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = LimitOffsetPagination
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
