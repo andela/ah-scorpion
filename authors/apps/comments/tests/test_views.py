@@ -111,7 +111,7 @@ class CommentsTests(APITestCase):
 
     def test_get_comment_from_article_without_comment(self):
         """
-        Test that a user can't get comment from an empty article.
+        Test that a user can't get comment an article without comment.
         """
         comment_view = CommentsListCreateAPIView.as_view()
         url = reverse('comments:all_comments', kwargs={"slug": 'not'})
