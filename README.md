@@ -412,7 +412,7 @@ Authentication required
 Authentication required
 
 No additional parameters required
- 
+
 returns:
 
 ```
@@ -435,7 +435,7 @@ doing the same for a second time returns:
 
 Authentication required
 No additional parameters required
- 
+
 returns:
 
 ```
@@ -519,7 +519,7 @@ An author cannot rate their own article
 
 ### Get Tags
 
-`GET /api/v1/tags`
+`GET /api/v1/tags` [Deprecated]
 
 ### Configuring environment variables
 
@@ -532,7 +532,7 @@ setup the application
 
 * Run `coverage erase` to clear any residual coverage files.
 * Run `coverage run manage.py test` to run the tests.
-* Run `coverage report --include="authors/*" --skip-covered -m` to show the coverage report of your tests. 
+* Run `coverage report --include="authors/*" --skip-covered -m` to show the coverage report of your tests.
 
   - Here, the `--include="authors/*"` ensures your report only reports on the coverage of the aurthors folder.
   - The `--skip-covered` ignores files with `100%`
