@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from social_core.exceptions import MissingBackend
 from social_django.utils import load_backend, load_strategy
+from rest_framework.mixins import CreateModelMixin
+from authors.apps.core.generate_token import generate_token
 
 from authors.apps.authentication.models import User
 from authors.apps.core.token import generate_token
