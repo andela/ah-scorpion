@@ -120,7 +120,6 @@ class DislikeArticle(generics.UpdateAPIView):
         response = {"Message": "You have successfully disliked this article"}
         return Response(response, status=status.HTTP_200_OK)
 
-
 class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     """
     Add or removes a user and article to the list of users liking different

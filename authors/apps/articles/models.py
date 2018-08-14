@@ -21,8 +21,11 @@ class Article(models.Model):
     tagList = ArrayField(
         models.CharField(max_length=200), null=True, blank=True)
 
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, db_column='author')
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               db_column='author')
+
+    favorited = models.ManyToManyField(User, related_name='favorited',
+                                       blank=True)
 
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     dislikes = models.ManyToManyField(
