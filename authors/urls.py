@@ -22,8 +22,9 @@ urlpatterns = [
 
     path('api/v1/articles/', include('authors.apps.articles.urls',
                                      namespace='articles')),
-    path('api/v1/articles/<str:slug>/comments/', include('authors.apps.comments.urls',
-                                                         namespace='comments')),
+    path('api/v1/articles/<str:slug>/comments/',
+         include('authors.apps.comments.urls',
+                 namespace='comments')),
     path('api/v1/', include('authors.apps.authentication.urls',
                             namespace='authentication')),
     path('api/v1/profiles/', include('authors.apps.profiles.urls',
