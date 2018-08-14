@@ -59,7 +59,9 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
-    }
+    },
+    "averageRating": null,
+    "ratingsCount": 0,
   }
 }
 ```
@@ -81,7 +83,9 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
-    }
+    },
+    "averageRating": null,
+    "ratingsCount": 0,
   }, {
 
     "slug": "how-to-train-your-dragon-2",
@@ -98,7 +102,9 @@ The preferred JSON object to be returned by the API should be structured as foll
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
-    }
+    },
+    "averageRating": 3.5,
+    "ratingsCount": 400,
   }],
   "articlesCount": 2
 }
@@ -138,6 +144,24 @@ The preferred JSON object to be returned by the API should be structured as foll
   "commentsCount": 1
 }
 ```
+
+### List of Ratings Response
+```source-json
+{
+  "ratings": [
+    {
+      "user": "jake",
+      "stars": 5
+    },
+    {
+      "user": "jamie",
+      "stars": 3
+    }
+  ]
+}
+```
+
+
 ### List of Tags Response
 ```source-json
 {
@@ -398,6 +422,29 @@ No additional parameters required
 Authentication required, returns the Article
 
 No additional parameters required
+
+### View an Article's Ratings
+
+`GET /api/v1/articles/:slug/ratings`
+
+No authentication required, returns the Article's ratings
+
+No additional parameters required
+
+### Rate an Article
+
+`POST /api/v1/articles/:slug/ratings`
+
+Authentication required, returns the information of the user who just rated
+
+Request body required:
+```source-json
+{
+  "stars": 2
+}
+```
+The number of stars should be 1,2,3,4 or 5.
+An author cannot rate their own article
 
 ### Get Tags
 

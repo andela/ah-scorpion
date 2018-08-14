@@ -28,7 +28,9 @@ class Article(models.Model):
         User, related_name='dislikes', blank=True)
 
     def __str__(self):
-        return self.title
+        # IMPORTANT to distinguish between printing the title only and the
+        # Article object itself
+        return f'Article: <{self.title}>'
 
     class Meta:
         ordering = ('title', )

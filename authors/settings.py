@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'authors.apps.articles.apps.ArticlesConfig',
     'authors.apps.core',
     'authors.apps.profiles',
+    'authors.apps.ratings',
 ]
 
 MIDDLEWARE = [
