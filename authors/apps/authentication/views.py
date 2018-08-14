@@ -15,6 +15,7 @@ from social_core.exceptions import MissingBackend
 from social_django.utils import load_backend, load_strategy
 from rest_framework.mixins import CreateModelMixin
 
+from authors.apps.core.token import generate_token
 from authors.apps.authentication.models import User
 from authors.apps.core.e_mail import SendEmail
 from authors.apps.core.token import generate_token
@@ -169,7 +170,6 @@ class SocialAuth(generics.CreateAPIView):
         # We therefore set the user to active here.
         if not user.is_active:
             user.is_active = True
-            user.save()
 
         def get_image_url(self):
             """
@@ -197,6 +197,7 @@ class SocialAuth(generics.CreateAPIView):
                 image_url = ""
 
             user.image = image_url
+            user.save()
             return image_url
 
         serializer = UserSerializer(user)
