@@ -18,13 +18,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Comment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('content', models.TextField()),
                 ('createdAt', models.DateTimeField(auto_now_add=True)),
                 ('updatedAt', models.DateTimeField(auto_now=True)),
-                ('article', models.ForeignKey(db_column='article', on_delete=django.db.models.deletion.CASCADE, to='articles.Article')),
-                ('parent', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='comments.Comment')),
-                ('user', models.ForeignKey(db_column='user', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('article', models.ForeignKey(db_column='article',
+                                              on_delete=django.db.models
+                                              .deletion.CASCADE,
+                                              to='articles.Article')),
+                ('parent', models.ForeignKey(default=None, null=True,
+                                             on_delete=django.db.models
+                                             .deletion.CASCADE,
+                                             related_name='children',
+                                             to='comments.Comment')),
+                ('user', models.ForeignKey(db_column='user',
+                                           on_delete=django.db.models.deletion
+                                           .CASCADE, to=settings
+                                           .AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ('createdAt',),
