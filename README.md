@@ -480,3 +480,14 @@ No additional parameters required
 setup the application
 * Use this info to create a .env file
 * Run `source .env` to initialize the environment variables
+
+### Testing the application
+
+* Run `coverage erase` to clear any residual coverage files.
+* Run `coverage run manage.py test` to run the tests.
+* Run `coverage report --include="authors/*" --skip-covered -m` to show the coverage report of your tests. 
+
+  - Here, the `--include="authors/*"` ensures your report only reports on the coverage of the aurthors folder.
+  - The `--skip-covered` ignores files with `100%`
+    coverage.
+  - The `-m` shows the missed lines.
