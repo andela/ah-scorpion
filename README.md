@@ -10,9 +10,12 @@ by leveraging the modern web.
 ---
 ## Mockup links
 
-[Landing Page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/)
-
-[Dashboard Page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/dashboard.html)
+- [landing page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/)
+- [dashboard page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/dashboard.html)
+- [signup page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/signup.html)
+- [login page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/login.html)
+- [profile page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/profile.html)
+- [view-one-article page](https://6zflbtxzbitjxze0azbs0w-on.drv.tw/SIMS/ah-scorpion-templates/view-article.html)
 
 ## API Spec
 The preferred JSON object to be returned by the API should be structured as follows:
@@ -45,8 +48,11 @@ The preferred JSON object to be returned by the API should be structured as foll
 ```source-json
 {
   "article": {
-    "slug": "how-to-train-your-dragon",
+    "id": 1,
     "title": "How to train your dragon",
+    "likes": 3,
+    "dislikes": 1,
+    "slug": "how-to-train-your-dragon",
     "description": "Ever wonder how?",
     "body": "It takes a Jacobian",
     "tagList": ["dragons", "training"],
@@ -69,8 +75,11 @@ The preferred JSON object to be returned by the API should be structured as foll
 ```source-json
 {
   "articles":[{
-    "slug": "how-to-train-your-dragon",
+    "id": 1,
     "title": "How to train your dragon",
+    "likes": 2,
+    "dislikes": 3,
+    "slug": "how-to-train-your-dragon",
     "description": "Ever wonder how?",
     "body": "It takes a Jacobian",
     "tagList": ["dragons", "training"],
@@ -87,9 +96,11 @@ The preferred JSON object to be returned by the API should be structured as foll
     "averageRating": null,
     "ratingsCount": 0,
   }, {
-
-    "slug": "how-to-train-your-dragon-2",
+    "id": 2,
     "title": "How to train your dragon 2",
+    "likes": 1,
+    "dislikes": 0,
+    "slug": "how-to-train-your-dragon-2",
     "description": "So toothless",
     "body": "It a dragon",
     "tagList": ["dragons", "training"],
@@ -225,9 +236,22 @@ Example request body:
 }
 ```
 
+### Signup/Login via social Accounts( Facebook/Google):
+
+`POST /api/v1/users/social_auth/`
+
+Example request body:
+
+```source-json
+{
+  "access_token": "<your access_token>",
+  "provider": "<facebook/google-oauth2>"
+}
+```
+
 No authentication required, returns a User
 
-Required fields: `email`, `username`, `password`
+Required fields: `access_token` and  `provider`
 
 ### Get Current User
 
@@ -381,6 +405,53 @@ The `slug` also gets updated when the `title` is changed
 
 Authentication required
 
+### Like an Article
+
+`PUT /api/v1/articles/:slug/like`
+
+Authentication required
+
+No additional parameters required
+ 
+returns:
+
+```
+{
+  "Message": "You have successfully liked this article"
+}
+```
+
+doing the same for a second time returns:
+
+```
+{
+  "Message": "You no longer like this article"
+}
+```
+
+### Dislike an Article
+
+`PUT /api/v1/articles/:slug/dislike`
+
+Authentication required
+No additional parameters required
+ 
+returns:
+
+```
+{
+  "Message": "You have successfully disliked this article"
+}
+```
+
+doing the same for a second time returns:
+
+```
+{
+  "Message": "You no longer dislike this article"
+}
+```
+
 ### Add Comments to an Article
 
 `POST /api/v1/articles/:slug/comments`
@@ -456,3 +527,14 @@ An author cannot rate their own article
 setup the application
 * Use this info to create a .env file
 * Run `source .env` to initialize the environment variables
+
+### Testing the application
+
+* Run `coverage erase` to clear any residual coverage files.
+* Run `coverage run manage.py test` to run the tests.
+* Run `coverage report --include="authors/*" --skip-covered -m` to show the coverage report of your tests. 
+
+  - Here, the `--include="authors/*"` ensures your report only reports on the coverage of the aurthors folder.
+  - The `--skip-covered` ignores files with `100%`
+    coverage.
+  - The `-m` shows the missed lines.
