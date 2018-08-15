@@ -1,9 +1,12 @@
+"""Define our database tables."""
 from django.db import models
 from ..authentication.models import User
 from ..articles.models import Article
 
 
 class Comment(models.Model):
+    """Define the Comment table."""
+
     content = models.TextField()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
@@ -15,4 +18,6 @@ class Comment(models.Model):
                                null=True)
 
     class Meta:
+        """Order by time created, the most recently created is at the top."""
+
         ordering = ('createdAt',)
