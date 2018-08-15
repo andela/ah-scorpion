@@ -161,7 +161,8 @@ class DislikeComment(generics.UpdateAPIView):
             raise NotFound('A comment with this id does not exist.')
 
         # removes the user from the list of liking users,
-        # nothing changes if the user does not exist in the list of liking users
+        # nothing changes if the user does not exist
+        # in the list of liking users
         comment.likes.remove(user.id)
 
         # allows for the None option: you neither like nor dislike the comment
