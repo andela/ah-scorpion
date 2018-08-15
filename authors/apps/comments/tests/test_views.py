@@ -6,8 +6,8 @@ from rest_framework import status
 
 from authors.apps.authentication.models import User
 from authors.apps.comments.views import (
-    CommentsCreateDeleteAPIView, DislikeComment,
-    CommentsListCreateAPIView, LikeComment)
+    CommentsCreateDeleteAPIView, DislikeComment, CommentsListCreateAPIView,
+    LikeComment)
 from authors.apps.articles.views import ArticleList
 
 
@@ -80,7 +80,10 @@ class CommentsTests(APITestCase):
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
         url = reverse(
-            'comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
+            'comments:comment_detail', kwargs={
+                "slug": self.slug,
+                "pk": pk
+            })
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
         force_authenticate(request, user=self.user)
@@ -91,7 +94,11 @@ class CommentsTests(APITestCase):
         """Test that a user can't reply to a non-existent comment."""
         comment_view = CommentsCreateDeleteAPIView.as_view()
         url = reverse(
-            'comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
+            'comments:comment_detail',
+            kwargs={
+                "slug": self.slug,
+                "pk": "5463"
+            })
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
         force_authenticate(request, user=self.user)
@@ -132,7 +139,11 @@ class CommentsTests(APITestCase):
         """Test that a user can't delete non-existent comment."""
         comment_view = CommentsCreateDeleteAPIView.as_view()
         url = reverse(
-            'comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
+            'comments:comment_detail',
+            kwargs={
+                "slug": self.slug,
+                "pk": "5463"
+            })
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
@@ -143,7 +154,10 @@ class CommentsTests(APITestCase):
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
         url = reverse(
-            'comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
+            'comments:comment_detail', kwargs={
+                "slug": self.slug,
+                "pk": pk
+            })
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk=pk)
@@ -152,7 +166,6 @@ class CommentsTests(APITestCase):
 
 class LikeDislikeTests(APITestCase):
     """Test the liking and disliking functionality in comments."""
-
 
     def setUp(self):
         """Data for the tests."""
@@ -170,13 +183,13 @@ class LikeDislikeTests(APITestCase):
         # Set up comment to be used in testing
         self.articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
-        User.objects.create(username='olivia', email='olivia@gmail.com',
-                            password='1232444nm')
+        User.objects.create(
+            username='olivia', email='olivia@gmail.com', password='1232444nm')
         self.user = User.objects.get(username='olivia')
         self.article_view = ArticleList.as_view()
         self.comment_view = CommentsListCreateAPIView.as_view()
-        self.article_request = self.request_factory.post(self.articles_url,
-                                    self.sample_article, format='json')
+        self.article_request = self.request_factory.post(
+            self.articles_url, self.sample_article, format='json')
         force_authenticate(self.article_request, user=self.user)
         self.article_response = self.article_view(self.article_request)
         self.slug = self.article_response.data['slug']
@@ -190,13 +203,15 @@ class LikeDislikeTests(APITestCase):
             self.comment_request, slug=self.slug)
         self.pk = self.comment_response.data['id']
 
-
         # set up like and dislike urls
         self.likes_url = reverse(
             'comments:like_comment', args=[self.slug, self.pk])
         self.dislikes_url = reverse(
             'comments:dislike_comment', args=[self.slug, self.pk])
+<<<<<<< HEAD
 
+=======
+>>>>>>> [Chore #159726516] Refactor to conform to PEP8
 
     def test_like_without_auth(self):
         """Test that a user can't like a comment without authorization."""
@@ -216,8 +231,8 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=self.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(
-            response.data["Message"], 'You have successfully liked this comment')
+        self.assertIn(response.data["Message"],
+                      'You have successfully liked this comment')
 
     def test_successful_unlike(self):
         """Test that user can unlike an article successfully."""
@@ -236,17 +251,19 @@ class LikeDislikeTests(APITestCase):
         response = view(request, slug=self.slug, pk=self.pk)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(response.data["Message"], 'You no longer like this comment')
+        self.assertIn(response.data["Message"],
+                      'You no longer like this comment')
 
     def test_successful_dislike(self):
         """Test that user can dislike an article successfully."""
         view = DislikeComment.as_view()
-        request = self.request_factory.put(self.dislikes_url, args=[self.slug, self.pk])
+        request = self.request_factory.put(
+            self.dislikes_url, args=[self.slug, self.pk])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=self.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(
-            response.data["Message"], 'You have successfully disliked this comment')
+        self.assertIn(response.data["Message"],
+                      'You have successfully disliked this comment')
 
     def test_successful_undislike(self):
         """Test that user can undislike an article successfully."""
@@ -265,13 +282,14 @@ class LikeDislikeTests(APITestCase):
         response = view(request, slug=self.slug, pk=self.pk)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn(
-            response.data["Message"], 'You no longer dislike this comment')
+        self.assertIn(response.data["Message"],
+                      'You no longer dislike this comment')
 
     def test_like_unexisting_comment(self):
         """Test liking a comment that does not exist."""
         view = LikeComment.as_view()
-        request = self.request_factory.put(self.likes_url, args=[self.slug, 20])
+        request = self.request_factory.put(
+            self.likes_url, args=[self.slug, 20])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=20)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

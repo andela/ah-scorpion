@@ -16,7 +16,6 @@ class CommentSerializer(serializers.ModelSerializer):
     dislikes = serializers.SerializerMethodField(
         method_name='get_dislikes_count')
 
-
     class Meta:
         """specify the model and fields to be used by the serializer."""
 
@@ -33,15 +32,17 @@ class CommentSerializer(serializers.ModelSerializer):
         try:
             user = self.context['request'].user
         except self.context['request'].user.DoesNotExist:
+<<<<<<< HEAD
             raise \
                 PermissionDenied('Please log in first to perform this action')
+=======
+            raise PermissionDenied(
+                'Please log in first to perform this action')
+>>>>>>> [Chore #159726516] Refactor to conform to PEP8
         comment = Comment.objects.create(
-            user=user,
-            article=article,
-            **validated_data
-        )
+            user=user, article=article, **validated_data)
         return comment
-    
+
     def get_likes_count(self, instance):
         """Get the total number of likes for a particular comment."""
         return instance.likes.count()

@@ -18,7 +18,7 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Comment.objects.select_related()
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def filter_queryset(self, queryset):
         """Handle getting comments on an article."""
@@ -30,20 +30,24 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
         slug = self.kwargs['slug']
         context = super(CommentsListCreateAPIView,
                         self).get_serializer_context()
+<<<<<<< HEAD
         context["request"].data.update({
             "slug": slug
         })
+=======
+        context["request"].data.update({"slug": slug})
+>>>>>>> [Chore #159726516] Refactor to conform to PEP8
         return context
 
 
-class CommentsCreateDeleteAPIView(
-    generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
+class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
+                                  generics.CreateAPIView):
     """This view updates and deletes a comment. It also creates a child to a comment."""
 
     lookup_url_kwarg = 'pk'
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def destroy(self, request, slug=None, pk=None):
         """Handle deleting a comment."""
@@ -62,15 +66,17 @@ class CommentsCreateDeleteAPIView(
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request, slug=None, pk=None):
+<<<<<<< HEAD
+=======
+        """Create a child comment on a parent comment."""
+>>>>>>> [Chore #159726516] Refactor to conform to PEP8
         context = super(CommentsCreateDeleteAPIView,
                         self).get_serializer_context()
         try:
             slug = self.kwargs.get('slug')
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
-        context["request"].data.update({
-            "slug": slug
-        })
+        context["request"].data.update({"slug": slug})
         try:
             # getting the parent comment that will be the head of the thread
             context['request'].data['parent'] = Comment.objects.get(pk=pk).pk
@@ -93,7 +99,7 @@ class LikeComment(generics.UpdateAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def update(self, request, slug, pk):
         """Updates the user's liking status on a particular comment."""
@@ -133,7 +139,7 @@ class DislikeComment(generics.UpdateAPIView):
     """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def update(self, request, slug, pk):
         """Updates the user's disliking status on a particular comment."""
