@@ -272,7 +272,6 @@ class LikeDislikeTests(APITestCase):
         self.request_factory = APIRequestFactory()
         User.objects.create(
             username='olivia', email='olivia@gmail.com', password='1232444nm')
-
         view = ArticleList.as_view()
         self.user = User.objects.get(username='olivia')
         request = self.request_factory.post(articles_url, data, format='json')
@@ -363,3 +362,4 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug="slug-001")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
