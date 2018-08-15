@@ -17,9 +17,14 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
+from django.conf.urls import url
+from rest_framework_swagger.views import get_swagger_view
 
+schema_view = get_swagger_view(title="Author's Haven")
+
+urlpatterns = [
+    url(r'^$', schema_view),
+    path('admin/', admin.site.urls),
     path('api/v1/articles/', include('authors.apps.articles.urls',
                                      namespace='articles')),
     path('api/v1/articles/<str:slug>/comments/',
