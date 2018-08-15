@@ -2,17 +2,13 @@ import re
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import User
-from django.http import HttpResponse
-from .backends import JWTAuthentication
-
-from django.contrib.auth.tokens import default_token_generator
 from authors.apps.core.e_mail import SendEmail
-from django.contrib.sites.shortcuts import get_current_site
-from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
+from authors.settings import EMAIL_HOST_NAME
+from .models import User
 
 
 def password_validator(password):
