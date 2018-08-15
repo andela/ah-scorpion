@@ -74,7 +74,6 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
             url_slug = self.kwargs['slug']
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
-
         if context["request"].data.get(
                 "title",
                 "No Title") == Article.objects.get(slug=url_slug).title:
