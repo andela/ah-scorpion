@@ -567,7 +567,9 @@ An author cannot rate their own article
 
 ### Get Tags
 
-`GET /api/v1/tags`
+`GET /api/v1/tags` _deprecated_
+
+`GET /api/v1/articles/?tagList=<tag>`
 
 ### Configuring environment variables
 
