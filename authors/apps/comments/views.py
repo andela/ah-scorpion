@@ -81,7 +81,6 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
             context['request'].data['parent'] = Comment.objects.get(pk=pk).pk
         except Comment.DoesNotExist:
             raise NotFound('A comment with this ID does not exist.')
-
         serializer = self.serializer_class(
             data=context['request'].data, context=context)
         serializer.is_valid(raise_exception=True)
