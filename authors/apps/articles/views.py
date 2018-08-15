@@ -21,8 +21,8 @@ class ArticleList(generics.ListCreateAPIView):
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
         slug_text = context["request"].data.get("title",
-                                                "No Title") + " " \
-                    + uuid.uuid4().hex
+                                                "No Title") + " " + uuid\
+            .uuid4().hex
         slug = slugify(slug_text)
         context["request"].data.update({
             "slug": slug
