@@ -45,7 +45,6 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
     This view updates and deletes a comment.
     It also creates a child to a comment.
     """
-
     lookup_url_kwarg = 'pk'
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer

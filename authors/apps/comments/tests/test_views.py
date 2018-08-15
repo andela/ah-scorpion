@@ -29,6 +29,7 @@ class CommentsTests(APITestCase):
 
         self.articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
+<<<<<<< HEAD
         User.objects.create(
             username='olivia', email='olivia@gmail.com', password='1232444nm')
         self.user = User.objects.get(username='olivia')
@@ -36,10 +37,21 @@ class CommentsTests(APITestCase):
         self.comment_view = CommentsListCreateAPIView.as_view()
         self.article_request = self.request_factory.post(
             self.articles_url, self.sample_article, format='json')
+=======
+        User.objects.create(username='olivia', email='olivia@gmail.com',
+                            password='1232444nm')
+        self.user = User.objects.get(username='olivia')
+        self.article_view = ArticleList.as_view()
+        self.comment_view = CommentsListCreateAPIView.as_view()
+        self.article_request = self.request_factory.post(self.articles_url,
+                                                         self.sample_article,
+                                                         format='json')
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         force_authenticate(self.article_request, user=self.user)
         self.article_response = self.article_view(self.article_request)
         self.slug = self.article_response.data['slug']
         self.pk = self.article_response.data['id']
+<<<<<<< HEAD
         self.comments_url = reverse(
             'comments:all_comments', kwargs={"slug": self.slug})
         self.comment_request = self.request_factory.post(
@@ -47,6 +59,16 @@ class CommentsTests(APITestCase):
         force_authenticate(self.comment_request, user=self.user)
         self.comment_response = self.comment_view(
             self.comment_request, slug=self.slug)
+=======
+        self.comments_url = reverse('comments:all_comments',
+                                    kwargs={"slug": self.slug})
+        self.comment_request = self.request_factory.post(self.comments_url,
+                                                         self.sample_comment,
+                                                         format='json')
+        force_authenticate(self.comment_request, user=self.user)
+        self.comment_response = self.comment_view(self.comment_request,
+                                                  slug=self.slug)
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
 
     def test_comment_without_login(self):
         """Test that a user can't comment without authorisation."""
@@ -69,8 +91,13 @@ class CommentsTests(APITestCase):
         """Test that a user can comment successfully."""
         comment_view = CommentsListCreateAPIView.as_view()
         url = reverse('comments:all_comments', kwargs={"slug": self.slug})
+<<<<<<< HEAD
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
+=======
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -79,6 +106,7 @@ class CommentsTests(APITestCase):
         """Test that a user can reply to a comment successfully."""
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
+<<<<<<< HEAD
         url = reverse(
             'comments:comment_detail', kwargs={
                 "slug": self.slug,
@@ -86,6 +114,12 @@ class CommentsTests(APITestCase):
             })
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
+=======
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": pk})
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk=pk)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -93,6 +127,7 @@ class CommentsTests(APITestCase):
     def test_add_comment_child_without_parent(self):
         """Test that a user can't reply to a non-existent comment."""
         comment_view = CommentsCreateDeleteAPIView.as_view()
+<<<<<<< HEAD
         url = reverse(
             'comments:comment_detail',
             kwargs={
@@ -101,6 +136,12 @@ class CommentsTests(APITestCase):
             })
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
+=======
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": "5463"})
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -109,8 +150,13 @@ class CommentsTests(APITestCase):
         """Test that a user can't comment on a non-existent article."""
         comment_view = CommentsListCreateAPIView.as_view()
         url = reverse('comments:all_comments', kwargs={"slug": '1234what'})
+<<<<<<< HEAD
         request = self.request_factory.post(
             url, data=self.sample_comment, format='json')
+=======
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug='1234what')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -138,12 +184,17 @@ class CommentsTests(APITestCase):
     def test_delete_non_existent(self):
         """Test that a user can't delete non-existent comment."""
         comment_view = CommentsCreateDeleteAPIView.as_view()
+<<<<<<< HEAD
         url = reverse(
             'comments:comment_detail',
             kwargs={
                 "slug": self.slug,
                 "pk": "5463"
             })
+=======
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": "5463"})
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
@@ -153,15 +204,21 @@ class CommentsTests(APITestCase):
         """Test that a user can delete comment."""
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
+<<<<<<< HEAD
         url = reverse(
             'comments:comment_detail', kwargs={
                 "slug": self.slug,
                 "pk": pk
             })
+=======
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": pk})
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk=pk)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+<<<<<<< HEAD
 
 
 class LikeDislikeTests(APITestCase):
@@ -298,3 +355,5 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=10)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+=======
+>>>>>>> #159053991 Allow Users to Favourite and  Unfavourite Article (#26)
