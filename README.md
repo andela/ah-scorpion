@@ -473,6 +473,54 @@ Required field: `body`
 
 Authentication optional, returns multiple comments
 
+### Like a Comment
+
+`PUT /api/v1/articles/:slug/comments/:pk/like`
+
+Authentication required
+
+No additional parameters required
+ 
+returns:
+
+```
+{
+  "Message": "You have successfully liked this comment"
+}
+```
+
+doing the same for a second time returns:
+
+```
+{
+  "Message": "You no longer like this comment"
+}
+```
+
+### Dislike a Comment
+
+`PUT /api/v1/articles/:slug/comments/:pk/dislike`
+
+Authentication required
+
+No additional parameters required
+ 
+returns:
+
+```
+{
+  "Message": "You have successfully disliked this comment"
+}
+```
+
+doing the same for a second time returns:
+
+```
+{
+  "Message": "You no longer dislike this comment"
+}
+```
+
 ### Delete Comment
 
 `DELETE /api/v1/articles/:slug/comments/:id`
