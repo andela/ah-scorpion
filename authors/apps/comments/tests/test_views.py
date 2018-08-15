@@ -208,10 +208,6 @@ class LikeDislikeTests(APITestCase):
             'comments:like_comment', args=[self.slug, self.pk])
         self.dislikes_url = reverse(
             'comments:dislike_comment', args=[self.slug, self.pk])
-<<<<<<< HEAD
-
-=======
->>>>>>> [Chore #159726516] Refactor to conform to PEP8
 
     def test_like_without_auth(self):
         """Test that a user can't like a comment without authorization."""

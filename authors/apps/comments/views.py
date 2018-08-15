@@ -36,13 +36,7 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
         slug = self.kwargs['slug']
         context = super(CommentsListCreateAPIView,
                         self).get_serializer_context()
-<<<<<<< HEAD
-        context["request"].data.update({
-            "slug": slug
-        })
-=======
         context["request"].data.update({"slug": slug})
->>>>>>> [Chore #159726516] Refactor to conform to PEP8
         return context
 
 
@@ -75,10 +69,7 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request, slug=None, pk=None):
-<<<<<<< HEAD
-=======
         """Create a child comment on a parent comment."""
->>>>>>> [Chore #159726516] Refactor to conform to PEP8
         context = super(CommentsCreateDeleteAPIView,
                         self).get_serializer_context()
         try:

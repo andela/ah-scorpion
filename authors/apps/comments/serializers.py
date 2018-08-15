@@ -35,13 +35,8 @@ class CommentSerializer(serializers.ModelSerializer):
         try:
             user = self.context['request'].user
         except self.context['request'].user.DoesNotExist:
-<<<<<<< HEAD
-            raise \
-                PermissionDenied('Please log in first to perform this action')
-=======
             raise PermissionDenied(
                 'Please log in first to perform this action')
->>>>>>> [Chore #159726516] Refactor to conform to PEP8
         comment = Comment.objects.create(
             user=user, article=article, **validated_data)
         return comment
