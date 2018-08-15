@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, RequestsClient
 from rest_framework.test import force_authenticate
 
-
 from authors.apps.articles.views import (ArticleList, ArticleDetail,
                                          LikeArticle, DislikeArticle)
 from authors.apps.authentication.models import User
@@ -370,4 +369,3 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug="slug-001")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
