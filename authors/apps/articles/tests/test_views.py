@@ -152,7 +152,6 @@ class ArticleTests(APITestCase):
     def test_when_no_article_pagination(self):
         user = User.objects.get(username='olivia')
         view = ArticleList.as_view()
-
         pag_url = self.articles_url + '?limit=2&offset=0'
         request2 = self.request_factory.get(pag_url, format='json')
         force_authenticate(request2, user=user)
@@ -269,7 +268,6 @@ class LikeDislikeTests(APITestCase):
             "tagList": ["javscript", "python"],
             "images": ["image1", "image2"]
         }
-
         articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
         User.objects.create(
@@ -281,7 +279,6 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request)
         self.slug = response.data["slug"]
-
         # set up like and dislike urls
         self.likes_url = reverse('articles:like_article', args=[self.slug])
         self.dislikes_url = reverse(
@@ -315,12 +312,10 @@ class LikeDislikeTests(APITestCase):
         request = self.request_factory.put(self.likes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         # second request
         request = self.request_factory.put(self.likes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer like this article')
@@ -348,7 +343,6 @@ class LikeDislikeTests(APITestCase):
         request = self.request_factory.put(self.dislikes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer dislike this article')
