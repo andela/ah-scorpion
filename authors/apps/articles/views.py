@@ -20,20 +20,17 @@ class ArticleList(generics.ListCreateAPIView):
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
-        slug_text = context["request"].data.get("title",
-                                                "No Title") + " " + uuid\
-            .uuid4().hex
+        slug_text = context["request"].data.get(
+            "title", "No Title") + " " + uuid.uuid4().hex
         slug = slugify(slug_text)
-        context["request"].data.update({
-            "slug": slug
-        })
+        context["request"].data.update({"slug": slug})
         return context
 
 
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
     lookup_field = 'slug'
 
     def get_serializer_context(self):
@@ -43,6 +40,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
 
+<<<<<<< HEAD
         if context["request"].data.get("title",
                                        "No Title") == Article.objects \
                 .get(slug=url_slug).title:
@@ -51,27 +49,39 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
             slug_text = context["request"].data.get("title",
                                                     "No Title") + " " \
                         + uuid.uuid4().hex
+=======
+        if context["request"].data.get(
+                "title",
+                "No Title") == Article.objects.get(slug=url_slug).title:
+            slug = url_slug
+        else:
+            slug_text = context["request"].data.get(
+                "title", "No Title") + " " + uuid.uuid4().hex
+>>>>>>> [Chore #159053989] refactor to cater for 404
             slug = slugify(slug_text)
-        context["request"].data.update({
-            "slug": slug
-        })
+        context["request"].data.update({"slug": slug})
         return context
 
 
 class LikeArticle(generics.UpdateAPIView):
     """
-    Adds the user to the list of liking users and
-    removes the user from the list of disliking users.
+    Add the user to the list of liking users and
+    remove the user from the list of disliking users.
     If the user likes for a second time,
     we remove the user from the list of liking users
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def update(self, request, slug):
-        article = Article.objects.get(slug=slug)
+        """Update the user's liking status on a particular article."""
         user = request.user
+
+        try:
+            article = Article.objects.get(slug=slug)
+        except Article.DoesNotExist:
+            raise NotFound('An article with this slug does not exist.')
 
         # removes the user from the list of disliking users,
         # nothing changes if the user does not exist in the list of
@@ -95,18 +105,23 @@ class LikeArticle(generics.UpdateAPIView):
 
 class DislikeArticle(generics.UpdateAPIView):
     """
-    Adds the user to the list of disliking users and
-    removes the user from the list of liking users.
+    Add the user to the list of disliking users and
+    remove the user from the list of liking users.
     If the user dislikes for a second time,
     we remove the user from the list of disliking users
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def update(self, request, slug):
-        article = Article.objects.get(slug=slug)
+        """Update the user's disliking status on a particular article."""
         user = request.user
+
+        try:
+            article = Article.objects.get(slug=slug)
+        except Article.DoesNotExist:
+            raise NotFound('An article with this slug does not exist.')
 
         # removes the user from the list of liking users,
         # nothing changes if the user does not exist in the  list of liking
