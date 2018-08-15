@@ -98,8 +98,8 @@ class RatingsTestCase(APITestCase):
             response = self.client.get(ratings_url)
             return response._container[0].decode(), response.status_code
 
-    def rate(self, user: User = None, is_authenticated: bool = True, is_found:
-    bool = True, stars: int = 5):
+    def rate(self, user: User = None, is_authenticated: bool = True,
+             is_found: bool = True, stars: int = 5):
         """
         Put a rating to an article via the server
         :param user: The user that should get the rating if is_authenticated
@@ -109,7 +109,7 @@ class RatingsTestCase(APITestCase):
         :param is_found: Whether or not the article should be found by the
         server
         :param stars: The number of stars to be rated with, defaults to 5
-        :return: tuple of the status code and a string representation of the 
+        :return: tuple of the status code and a string representation of the
         response's data
         :rtype: tuple
         """

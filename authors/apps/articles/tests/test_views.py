@@ -369,4 +369,3 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug="slug-001")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
