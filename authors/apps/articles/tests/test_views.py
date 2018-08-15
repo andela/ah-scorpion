@@ -17,7 +17,7 @@ class ArticleTests(APITestCase):
             "title": "Be a python coder in three weeks without a hassle",
             "description": "Are you ready?",
             "body": "It takes grit",
-            "tagList": ["javscript", "python"],
+            "tagList": ["javascript", "python"],
             "images": ["image1", "image2"]
         }
         # Set up the registration url.
@@ -152,13 +152,108 @@ class ArticleTests(APITestCase):
     def test_when_no_article_pagination(self):
         user = User.objects.get(username='olivia')
         view = ArticleList.as_view()
-
         pag_url = self.articles_url + '?limit=2&offset=0'
         request2 = self.request_factory.get(pag_url, format='json')
         force_authenticate(request2, user=user)
         response = view(request2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['next'], None)
+
+    def test_search_article_by_author(self):
+        """
+        Test that user can search an article by author
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url+'?author__username=olivia')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertNotEqual(search_response.data, [])
+
+    def test_search_article_by_non_author(self):
+        """
+        Test that user can search an article by non-existent author
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url+'?author__username=random author')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertEqual(search_response.data, [])
+
+    def test_search_article_by_content(self):
+        """
+        Test that user can search an article by content
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url + '?body=It takes grit')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertNotEqual(search_response.data, [])
+
+    def test_search_article_by_non_existent_content(self):
+        """
+        Test that user can search an article by non-existent content
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url + '?body=kjkfhdsajkfg')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertEqual(search_response.data, [])
+
+    def test_search_article_by_tags(self):
+        """
+        Test that user can search an article by tags
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url + '?tagList=javascript')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertNotEqual(search_response.data, [])
+
+    def test_search_article_by_non_existent_tags(self):
+        """
+        Test that user can search an article by non-existent tags
+        """
+        user = User.objects.get(username='olivia')
+        view = ArticleList.as_view()
+        request = self.request_factory.post(
+            self.articles_url, self.data, format='json')
+        force_authenticate(request, user=user)
+        view(request)
+        search_request = self.request_factory.get(
+            self.articles_url + '?tagList=hjsjdkgfadf')
+        force_authenticate(search_request, user=user)
+        search_response = view(search_request)
+        self.assertEqual(search_response.data, [])
 
 
 class LikeDislikeTests(APITestCase):
@@ -173,19 +268,16 @@ class LikeDislikeTests(APITestCase):
             "tagList": ["javscript", "python"],
             "images": ["image1", "image2"]
         }
-
         articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
         User.objects.create(
             username='olivia', email='olivia@gmail.com', password='1232444nm')
-
         view = ArticleList.as_view()
         self.user = User.objects.get(username='olivia')
         request = self.request_factory.post(articles_url, data, format='json')
         force_authenticate(request, user=self.user)
         response = view(request)
         self.slug = response.data["slug"]
-
         # set up like and dislike urls
         self.likes_url = reverse('articles:like_article', args=[self.slug])
         self.dislikes_url = reverse(
@@ -219,12 +311,10 @@ class LikeDislikeTests(APITestCase):
         request = self.request_factory.put(self.likes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         # second request
         request = self.request_factory.put(self.likes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer like this article')
@@ -252,7 +342,6 @@ class LikeDislikeTests(APITestCase):
         request = self.request_factory.put(self.dislikes_url, args=[self.slug])
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer dislike this article')

@@ -1,6 +1,9 @@
+from django.utils.text import slugify
+from django_filters import rest_framework as filters
+from django.contrib.postgres.fields import ArrayField
+import django_filters
 import uuid
 
-from django.utils.text import slugify
 from rest_framework import generics, status
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
@@ -12,11 +15,43 @@ from .models import Article
 from .serializers import ArticleSerializer
 
 
+class ArticleFilter(filters.FilterSet):
+    """
+    Create a custom filter class for articles,
+    for getting dynamic queries from the url
+    """
+    title = filters.CharFilter(field_name='title', lookup_expr='icontains')
+    description = filters.CharFilter(field_name='description',
+                                     lookup_expr='icontains')
+    body = filters.CharFilter(field_name='body', lookup_expr='icontains')
+    author__username = filters.CharFilter(field_name='author__username',
+                                          lookup_expr='icontains')
+
+    class Meta:
+        """
+        This class describes the fields to be used in the search.
+        The ArrayField has also been over-ridden
+        """
+        model = Article
+        fields = ['title', 'description', 'body', 'author__username',
+                  'tagList']
+        filter_overrides = {
+            ArrayField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            },
+        }
+
+
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = LimitOffsetPagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ArticleFilter
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
@@ -39,7 +74,6 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
             url_slug = self.kwargs['slug']
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
-
         if context["request"].data.get(
                 "title",
                 "No Title") == Article.objects.get(slug=url_slug).title:
