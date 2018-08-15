@@ -45,7 +45,6 @@ class ArticleFilter(filters.FilterSet):
         }
 
 
-
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
