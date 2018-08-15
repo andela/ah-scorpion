@@ -1,25 +1,15 @@
-import datetime
-
-import jwt
 import requests
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, GenericAPIView
 from rest_framework import generics
+from rest_framework import status
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from social_core.exceptions import MissingBackend
 from social_django.utils import load_backend, load_strategy
-from rest_framework.mixins import CreateModelMixin
 
-from authors.apps.core.token import generate_token
 from authors.apps.authentication.models import User
-from authors.apps.core.e_mail import SendEmail
 from authors.apps.core.token import generate_token
-from authors.settings import SECRET_KEY, EMAIL_HOST_NAME
 from .renderers import UserJSONRenderer, EmailJSONRenderer
 from .serializers import (LoginSerializer, ForgotPasswordSerializers,
                           RegistrationSerializer, UserSerializer,
@@ -28,14 +18,14 @@ from .serializers import (LoginSerializer, ForgotPasswordSerializers,
 
 class RegistrationAPIView(generics.CreateAPIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationSerializer
 
 
 class LoginAPIView(CreateModelMixin, generics.GenericAPIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -47,8 +37,8 @@ class LoginAPIView(CreateModelMixin, generics.GenericAPIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated, )
-    renderer_classes = (UserJSONRenderer, )
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (UserJSONRenderer,)
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -74,8 +64,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
-    permission_classes = (AllowAny, )
-    renderer_classes = (EmailJSONRenderer, )
+    permission_classes = (AllowAny,)
+    renderer_classes = (EmailJSONRenderer,)
     serializer_class = ForgotPasswordSerializers
 
     def post(self, request, *args, **kwargs):
@@ -87,7 +77,7 @@ class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
 
 
 class ConfirmResetPassword(generics.ListAPIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = ForgotPasswordSerializers
 
     def list(self, request, token):
@@ -96,7 +86,7 @@ class ConfirmResetPassword(generics.ListAPIView):
 
 
 class ResetPasswordDoneAPIView(generics.UpdateAPIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = ResetPasswordDoneSerializers
 
     def update(self, request):
@@ -112,16 +102,17 @@ class SocialAuth(generics.CreateAPIView):
     """
     Allows for social signup and login using Google and Facebook
     """
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = SocialAuthSerializer
-    renderer_classes = (UserJSONRenderer, )
+    renderer_classes = (UserJSONRenderer,)
 
     def create(self, request):
         """
         Receives the access_token and provider from the request,
         once authentication is comlpete, it creates a new user record
-        if it does exist already. The user's information (username, email and image)
-        are saved and the user is provided with a JWT token for authorization when
+        if it does exist already. The user's information (username, email
+        and image) are saved and the user is provided with a JWT token for
+        authorization when
         using our API.
         """
         # Get the access_token and provider from request
@@ -133,7 +124,8 @@ class SocialAuth(generics.CreateAPIView):
         provider = serializer.data.get('provider')
         access_token = serializer.data.get('access_token')
 
-        # strategy sets up the required custom configuration for working with Django
+        # strategy sets up the required custom configuration for  working
+        # with Django
         strategy = load_strategy(request)
 
         try:
@@ -179,18 +171,18 @@ class SocialAuth(generics.CreateAPIView):
             """
             try:
                 if provider == "google-oauth2":
-                    url = "http://picasaweb.google.com/data/entry/api/user/{}?alt=json".format(
-                        user.email)
+                    url = "http://picasaweb.google.com/data/entry/api/user/" \
+                          "{}?alt=json".format(user.email)
                     data = requests.get(url).json()
                     image_url = data["entry"]["gphoto$thumbnail"]["$t"]
 
                 elif provider == "facebook":
-                    id_url = "https://graph.facebook.com/me?access_token={}".format(
-                        access_token)
+                    id_url = "https://graph.facebook.com/me?access_token={}" \
+                        .format(access_token)
                     id_data = requests.get(id_url).json()
                     user_id = id_data["id"]
-                    url = "http://graph.facebook.com/{}/picture?type=small".format(
-                        user_id)
+                    url = "http://graph.facebook.com/{}/picture?type=small" \
+                        .format(user_id)
                     image_url = requests.get(url, allow_redirects=True).url
 
             except BaseException:

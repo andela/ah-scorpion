@@ -11,10 +11,9 @@ class JWTAuthentication(authentication.TokenAuthentication):
     the keyword 'Bearer'
 
     Example
-     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.
-                            eyJpZGVudGl0eSI6eyJlbWFpbCI6ImRhdmVtYXRoZXdzQGdtYWls
-                            LmNvbSIsInVzZXJuYW1lIjoiZGF2ZW1hdGhld3MifSwiaWF0Ijox
-                            NTMyNDkyMjM2LCJleHAiOjE1MzI0OTIyNjZ9.
+     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGl0e
+     SI6eyJlbWFpbCI6ImRhdmVtYXRoZXdzQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiZGF2ZW1hd
+     Ghld3MifSwiaWF0IjoxNTMyNDkyMjM2LCJleHAiOjE1MzI0OTIyNjZ9.
     """
     keyword = 'Bearer'
 

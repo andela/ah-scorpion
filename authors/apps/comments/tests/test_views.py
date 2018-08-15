@@ -29,19 +29,26 @@ class CommentsTests(APITestCase):
         # Set up the registration url.
         self.articles_url = reverse('articles:all_articles')
         self.request_factory = APIRequestFactory()
-        User.objects.create(username='olivia', email='olivia@gmail.com', password='1232444nm')
+        User.objects.create(username='olivia', email='olivia@gmail.com',
+                            password='1232444nm')
         self.user = User.objects.get(username='olivia')
         self.article_view = ArticleList.as_view()
         self.comment_view = CommentsListCreateAPIView.as_view()
-        self.article_request = self.request_factory.post(self.articles_url, self.sample_article, format='json')
+        self.article_request = self.request_factory.post(self.articles_url,
+                                                         self.sample_article,
+                                                         format='json')
         force_authenticate(self.article_request, user=self.user)
         self.article_response = self.article_view(self.article_request)
         self.slug = self.article_response.data['slug']
         self.pk = self.article_response.data['id']
-        self.comments_url = reverse('comments:all_comments', kwargs={"slug": self.slug})
-        self.comment_request = self.request_factory.post(self.comments_url, self.sample_comment, format='json')
+        self.comments_url = reverse('comments:all_comments',
+                                    kwargs={"slug": self.slug})
+        self.comment_request = self.request_factory.post(self.comments_url,
+                                                         self.sample_comment,
+                                                         format='json')
         force_authenticate(self.comment_request, user=self.user)
-        self.comment_response = self.comment_view(self.comment_request, slug=self.slug)
+        self.comment_response = self.comment_view(self.comment_request,
+                                                  slug=self.slug)
 
     def test_comment_without_login(self):
         """
@@ -70,7 +77,8 @@ class CommentsTests(APITestCase):
         """
         comment_view = CommentsListCreateAPIView.as_view()
         url = reverse('comments:all_comments', kwargs={"slug": self.slug})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -81,8 +89,10 @@ class CommentsTests(APITestCase):
         """
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": pk})
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk=pk)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -92,8 +102,10 @@ class CommentsTests(APITestCase):
         Test that a user can't reply to a non-existent comment.
         """
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": "5463"})
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -104,7 +116,8 @@ class CommentsTests(APITestCase):
         """
         comment_view = CommentsListCreateAPIView.as_view()
         url = reverse('comments:all_comments', kwargs={"slug": '1234what'})
-        request = self.request_factory.post(url, data=self.sample_comment, format='json')
+        request = self.request_factory.post(url, data=self.sample_comment,
+                                            format='json')
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug='1234what')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -138,7 +151,8 @@ class CommentsTests(APITestCase):
         Test that a user can't delete non-existent comment
         """
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": "5463"})
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": "5463"})
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
@@ -150,9 +164,9 @@ class CommentsTests(APITestCase):
         """
         pk = self.comment_response.data['id']
         comment_view = CommentsCreateDeleteAPIView.as_view()
-        url = reverse('comments:comment_detail', kwargs={"slug": self.slug, "pk": pk})
+        url = reverse('comments:comment_detail',
+                      kwargs={"slug": self.slug, "pk": pk})
         request = self.request_factory.delete(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk=pk)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
