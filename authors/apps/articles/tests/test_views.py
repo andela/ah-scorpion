@@ -1,11 +1,10 @@
-# articles/tests/test_views.py
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, RequestsClient
 from rest_framework.test import force_authenticate
 
-from authors.apps.articles.views import ArticleList, ArticleDetail, \
-    LikeArticle, DislikeArticle
+from authors.apps.articles.views import (ArticleList, ArticleDetail,
+                                         LikeArticle, DislikeArticle)
 from authors.apps.authentication.models import User
 
 
@@ -259,10 +258,10 @@ class ArticleTests(APITestCase):
 
 
 class LikeDislikeTests(APITestCase):
+    """Test the liking and disliking functionality in articles."""
+
     def setUp(self):
-        """
-        Data for the tests
-        """
+        """Data for the tests."""
         data = {
             "title": "Be a python coder in three weeks without a hassle",
             "description": "Are you ready?",
@@ -277,9 +276,9 @@ class LikeDislikeTests(APITestCase):
             username='olivia', email='olivia@gmail.com', password='1232444nm')
 
         view = ArticleList.as_view()
-        user = User.objects.get(username='olivia')
+        self.user = User.objects.get(username='olivia')
         request = self.request_factory.post(articles_url, data, format='json')
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request)
         self.slug = response.data["slug"]
 
@@ -289,47 +288,37 @@ class LikeDislikeTests(APITestCase):
             'articles:dislike_article', args=[self.slug])
 
     def test_like_without_auth(self):
-        """
-        Test that a user can't like an article without authorization.
-        """
+        """Test that a user can't like an article without authorization."""
         response = self.client.put(self.likes_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_dislike_without_auth(self):
-        """
-        Test that a user can't dislike an article without authorization.
-        """
+        """Test that a user can't dislike an article without authorization."""
         response = self.client.put(self.dislikes_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_successful_like(self):
-        """
-        Test that user can like an article successfully
-        """
-        user = User.objects.get(username='olivia')
+        """Test that user can like an article successfully."""
         view = LikeArticle.as_view()
         request = self.request_factory.put(self.likes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You have successfully liked this article')
 
     def test_successful_unlike(self):
-        """
-        Test that user can unlike an article successfully
-        """
-        user = User.objects.get(username='olivia')
+        """Test that user can unlike an article successfully."""
         view = LikeArticle.as_view()
 
         # first request
         request = self.request_factory.put(self.likes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
 
         # second request
         request = self.request_factory.put(self.likes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -337,36 +326,47 @@ class LikeDislikeTests(APITestCase):
                       'You no longer like this article')
 
     def test_successful_dislike(self):
-        """
-        Test that user can dislike an article successfully
-        """
-        user = User.objects.get(username='olivia')
+        """Test that user can dislike an article successfully."""
         view = DislikeArticle.as_view()
         request = self.request_factory.put(self.dislikes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You have successfully disliked this article')
 
     def test_successful_undislike(self):
-        """
-        Test that user can undislike an article successfully
-        """
-        user = User.objects.get(username='olivia')
+        """Test that user can un-dislike an article successfully."""
         view = DislikeArticle.as_view()
 
         # first request
         request = self.request_factory.put(self.dislikes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
 
         # second request
         request = self.request_factory.put(self.dislikes_url, args=[self.slug])
-        force_authenticate(request, user=user)
+        force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer dislike this article')
+
+    def test_like_unexisting_article(self):
+        """Test liking an article that does not exist."""
+        view = LikeArticle.as_view()
+        request = self.request_factory.put(self.likes_url, args=["slug-001"])
+        force_authenticate(request, user=self.user)
+        response = view(request, slug="slug-001")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_dislike_unexisting_article(self):
+        """Test disliking an article that does not exist."""
+        view = DislikeArticle.as_view()
+        request = self.request_factory.put(
+            self.dislikes_url, args=["slug-001"])
+        force_authenticate(request, user=self.user)
+        response = view(request, slug="slug-001")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
