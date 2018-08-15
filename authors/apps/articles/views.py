@@ -40,16 +40,6 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
 
-<<<<<<< HEAD
-        if context["request"].data.get("title",
-                                       "No Title") == Article.objects \
-                .get(slug=url_slug).title:
-            slug = url_slug
-        else:
-            slug_text = context["request"].data.get("title",
-                                                    "No Title") + " " \
-                        + uuid.uuid4().hex
-=======
         if context["request"].data.get(
                 "title",
                 "No Title") == Article.objects.get(slug=url_slug).title:
@@ -57,7 +47,6 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         else:
             slug_text = context["request"].data.get(
                 "title", "No Title") + " " + uuid.uuid4().hex
->>>>>>> [Chore #159053989] refactor to cater for 404
             slug = slugify(slug_text)
         context["request"].data.update({"slug": slug})
         return context
