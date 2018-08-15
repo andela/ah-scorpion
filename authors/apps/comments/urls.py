@@ -9,6 +9,8 @@ urlpatterns = [
     path('', views.CommentsListCreateAPIView.as_view(), name='all_comments'),
     path('<int:pk>/', views.CommentsCreateDeleteAPIView.as_view(),
          name='comment_detail'),
+    path('history/<int:pk>/', views.GetCommentHistory.as_view(),
+         name='comment_history'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

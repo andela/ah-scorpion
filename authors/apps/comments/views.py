@@ -4,8 +4,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
 
-from ..comments.models import Comment
-from ..comments.serializers import CommentSerializer
+from ..comments.models import Comment, CommentHistory
+from ..comments.serializers import CommentSerializer, CommentHistorySerializer
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
@@ -73,3 +73,62 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, slug=None, pk=None):
+
+        try:
+            comment = Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            return Response(
+                {"message": "Comment not found"},
+                status=status.HTTP_404_NOT_FOUND)
+
+        context = super(CommentsCreateDeleteAPIView,
+                        self).get_serializer_context()
+        new_comment = context["request"].data['content']
+
+        initial_comment = comment.content
+
+        if initial_comment == new_comment:
+            return Response({"message": "New comment same as the existing. "
+                                        "Editing rejected"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        edited_comment = CommentHistory.objects.create(comment=initial_comment,
+                                                       parent_comment=comment)
+        edited_comment.save()
+
+        comment.content = new_comment
+        comment.save()
+
+        serializer = self.serializer_class(data=context['request'].data,
+                                           context=context)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetCommentHistory(generics.ListAPIView):
+    lookup_url_kwarg = 'pk'
+    serializer_class = CommentHistorySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Overrides the default GET request from ListAPIView
+        Returns all comment edits for a particular comment
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        # """
+
+        try:
+            comment = Comment.objects.get(pk=kwargs['pk'])
+        except Comment.DoesNotExist:
+            return Response(
+                {"message": "Comment not found"},
+                status=status.HTTP_404_NOT_FOUND)
+
+        self.queryset = CommentHistory.objects.filter(parent_comment=comment)
+
+        return generics.ListAPIView.list(self, request, *args, **kwargs)

@@ -1,6 +1,8 @@
+from django.db.models import Subquery
 from rest_framework import serializers
+from django_filters import rest_framework as filters
 from rest_framework.exceptions import NotFound, PermissionDenied
-from ..comments.models import Comment
+from ..comments.models import Comment, CommentHistory
 from ..articles.models import Article
 from ..authentication.serializers import UserSerializer
 from ..articles.serializers import ArticleSerializer
@@ -31,3 +33,10 @@ class CommentSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return comment
+
+
+class CommentHistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CommentHistory
+        fields = '__all__'
