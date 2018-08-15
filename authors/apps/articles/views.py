@@ -20,9 +20,11 @@ class ArticleFilter(filters.FilterSet):
     for getting dynamic queries from the url
     """
     title = filters.CharFilter(field_name='title', lookup_expr='icontains')
-    description = filters.CharFilter(field_name='description', lookup_expr='icontains')
+    description = filters.CharFilter(field_name='description',
+                                     lookup_expr='icontains')
     body = filters.CharFilter(field_name='body', lookup_expr='icontains')
-    author__username = filters.CharFilter(field_name='author__username', lookup_expr='icontains')
+    author__username = filters.CharFilter(field_name='author__username',
+                                          lookup_expr='icontains')
 
     class Meta:
         """
@@ -30,7 +32,8 @@ class ArticleFilter(filters.FilterSet):
         The ArrayField has also been over-ridden
         """
         model = Article
-        fields = ['title', 'description', 'body', 'author__username', 'tagList']
+        fields = ['title', 'description', 'body', 'author__username',
+                  'tagList']
         filter_overrides = {
             ArrayField: {
                 'filter_class': django_filters.CharFilter,
