@@ -36,7 +36,8 @@ class UserJSONRenderer(JSONRenderer):
             if user_db.is_active is False:
                 return json.dumps({
                     'Message':
-                    "Please confirm your email address to complete the registration"
+                        "Please confirm your email address "
+                        "to complete the registration"
                 })
         except KeyError:
             pass
@@ -70,5 +71,5 @@ class EmailJSONRenderer(JSONRenderer):
 
         return json.dumps({
             'Message':
-            "Please confirm your email address for further instruction."
+                "Please confirm your email address for further instruction."
         })

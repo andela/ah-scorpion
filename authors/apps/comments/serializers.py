@@ -23,7 +23,8 @@ class CommentSerializer(serializers.ModelSerializer):
         try:
             user = self.context['request'].user
         except self.context['request'].user.DoesNotExist:
-            raise PermissionDenied('Please log in first to perform this action')
+            raise \
+                PermissionDenied('Please log in first to perform this action')
         comment = Comment.objects.create(
             user=user,
             article=article,

@@ -75,8 +75,8 @@ class AuthenticationTests(APITestCase):
         """
         Tests if error 401 is returned if the activation URL is accessed
         with an valid token that has already been used.
-        A message 'Activation link has been used!' should be sent to the browser
-         using HTTPResponse
+        A message 'Activation link has been used!' should be sent to the
+        browser using HTTPResponse
         :return: None
         """
         # register dummy user and get token
@@ -103,6 +103,6 @@ class AuthenticationTests(APITestCase):
         self.client.post(self.reg_url, self.data, format='json')
 
         response = self.client.post(self.login_url, self.data, format='json')
-        assert ("Please verify your email address to activate account" in str(
-            response._container))
+        assert ("Please verify your email address to activate account" in
+                str(response._container))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

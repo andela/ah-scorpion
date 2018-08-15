@@ -109,7 +109,7 @@ class RatingsTestCase(APITestCase):
         :param is_found: Whether or not the article should be found by the
         server
         :param stars: The number of stars to be rated with, defaults to 5
-         :return: tuple of the status code and a string representation of the 
+        :return: tuple of the status code and a string representation of the 
         response's data
         :rtype: tuple
         """
@@ -212,6 +212,7 @@ class RatingsTestCase(APITestCase):
         Test that while getting an article, there are averageRating and
         ratingsCount
         """
+
         one_article_url = reverse("articles:article_detail",
                                   kwargs={"slug": self.slug})
         self.assertDictContainsSubset({"averageRating": None,

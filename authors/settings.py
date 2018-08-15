@@ -100,7 +100,8 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':
-            'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+            'django.contrib.auth.password_validation'
+            '.UserAttributeSimilarityValidator',
     },
     {
         'NAME':
@@ -147,15 +148,15 @@ AUTH_USER_MODEL = 'authentication.User'
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER':
-    'authors.apps.core.exceptions.core_exception_handler',
+        'authors.apps.core.exceptions.core_exception_handler',
     'NON_FIELD_ERRORS_KEY':
-    'error',
+        'error',
     'DEFAULT_PERMISSION_CLASSES':
-    ('rest_framework.permissions.IsAuthenticated', ),
+        ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_AUTHENTICATION_CLASSES':
-    ('authors.apps.authentication.backends.JWTAuthentication', ),
+        ('authors.apps.authentication.backends.JWTAuthentication',),
     'TEST_REQUEST_DEFAULT_FORMAT':
-    'json',
+        'json',
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_FILTER_BACKENDS':

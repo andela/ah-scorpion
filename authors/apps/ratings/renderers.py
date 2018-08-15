@@ -29,9 +29,7 @@ class RatingsRenderer(JSONRenderer):
                 return super().render(data)
             else:
                 # here, the errors key was not found and will be added manually
-                errors = dict(errors=
-                              dict(detail=errors)
-                              )
+                errors = dict(errors=dict(detail=errors))
                 return super().render(errors)
 
         # wrap the data under the 'ratings' namespace
