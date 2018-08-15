@@ -24,6 +24,7 @@ class CommentEditHistory(APITestCase):
         }
 
         self.new_comment = {"content": "This is the new comment"}
+        self.old_comment = "This is a very nice comment"
         # Set up the registration url.
 
         self.request_factory = APIRequestFactory()
@@ -59,7 +60,7 @@ class CommentEditHistory(APITestCase):
 
         # Comment on the article
         comment = Comment.objects.create(
-            content="This is a very nice comment",
+            content=self.old_comment,
             user=user,
             article=self.article
         )
@@ -142,7 +143,6 @@ class CommentEditHistory(APITestCase):
                          status.HTTP_404_NOT_FOUND)
 
     def test_comment_history(self):
-
         # Create a comment
         view = CommentsCreateDeleteAPIView.as_view()
         self.update_comment_url = reverse(
@@ -166,8 +166,7 @@ class CommentEditHistory(APITestCase):
         force_authenticate(request, user=self.user)
 
         response = view(request, pk=self.comment)
-
-        assert (str(self.comment), self.new_comment['content'] in str(
-            response.data))
+        assert (str(self.comment) in str(response.data))
+        assert (self.old_comment in str(response.data))
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
