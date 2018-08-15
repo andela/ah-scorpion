@@ -10,7 +10,10 @@ from ..comments.serializers import CommentSerializer
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
-    """This view lists all comments in an article and also creates the comments."""
+    """
+    This view lists all comments in an article
+    and also creates the comments.
+    """
 
     # filter by slug from url
     lookup_field = 'article__slug'
@@ -26,7 +29,10 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
         return queryset.filter(**filters)
 
     def get_serializer_context(self):
-        """Interceptes request data and modifies it before passing it to the serialzer."""
+        """
+        Interceptes request data and modifies it before
+        passing it to the serialzer.
+        """
         slug = self.kwargs['slug']
         context = super(CommentsListCreateAPIView,
                         self).get_serializer_context()
@@ -42,7 +48,10 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
 
 class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
                                   generics.CreateAPIView):
-    """This view updates and deletes a comment. It also creates a child to a comment."""
+    """
+    This view updates and deletes a comment.
+    It also creates a child to a comment.
+    """
 
     lookup_url_kwarg = 'pk'
     queryset = Comment.objects.all()
@@ -111,7 +120,8 @@ class LikeComment(generics.UpdateAPIView):
             raise NotFound('A comment with this id does not exist.')
 
         # removes the user from the list of disliking users,
-        # nothing changes if the user does not exist in the list of disliking users
+        # nothing changes if the user does not exist in
+        # the list of disliking users
         comment.dislikes.remove(user.id)
 
         # allows for the None option: you neither like nor dislike the comment

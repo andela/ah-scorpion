@@ -11,13 +11,20 @@ class Comment(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='user')
-    article = models.ForeignKey(Article, on_delete=models.CASCADE,
-                                db_column='article')
-    parent = models.ForeignKey('self', related_name='children',
-                               on_delete=models.CASCADE, default=None,
-                               null=True)
+    article = models.ForeignKey(
+        Article, on_delete=models.CASCADE, db_column='article')
+    likes = models.ManyToManyField(
+        User, related_name='comment_likes', blank=True)
+    dislikes = models.ManyToManyField(
+        User, related_name='comment_dislikes', blank=True)
+    parent = models.ForeignKey(
+        'self',
+        related_name='children',
+        on_delete=models.CASCADE,
+        default=None,
+        null=True)
 
     class Meta:
         """Order by time created, the most recently created is at the top."""
 
-        ordering = ('createdAt',)
+        ordering = ('createdAt', )

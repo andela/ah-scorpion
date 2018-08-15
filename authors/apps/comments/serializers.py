@@ -1,4 +1,7 @@
-"""Handle fetching data from the models and converting it to JSON for display in our API."""
+"""
+Handle fetching data from the models and
+converting it to JSON for display in our API.
+"""
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, PermissionDenied
 from ..comments.models import Comment
