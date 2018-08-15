@@ -33,7 +33,7 @@ class ArticleList(generics.ListCreateAPIView):
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
 
     def get_serializer_context(self):
