@@ -1,7 +1,7 @@
 # articles/tests/test_views.py
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase, APIRequestFactory, RequestsClient
 from rest_framework.test import force_authenticate
 
 from authors.apps.articles.views import ArticleList, ArticleDetail, \
@@ -369,3 +369,4 @@ class LikeDislikeTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(response.data["Message"],
                       'You no longer dislike this article')
+
