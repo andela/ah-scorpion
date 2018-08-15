@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, RequestsClient
 from rest_framework.test import force_authenticate
 
-
 from authors.apps.articles.views import (ArticleList, ArticleDetail,
                                          LikeArticle, DislikeArticle)
 from authors.apps.authentication.models import User
