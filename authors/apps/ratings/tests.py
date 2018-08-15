@@ -215,7 +215,6 @@ class RatingsTestCase(APITestCase):
 
         one_article_url = reverse("articles:article_detail",
                                   kwargs={"slug": self.slug})
-        print("XXXX", self.client.get(one_article_url).data)
         self.assertDictContainsSubset({"averageRating": None,
                                        "ratingsCount": 0},
                                       self.client.get(one_article_url).data)

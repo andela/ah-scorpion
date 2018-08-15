@@ -25,14 +25,16 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
 
     def get_serializer_context(self):
         slug = self.kwargs['slug']
-        context = super(CommentsListCreateAPIView, self).get_serializer_context()
+        context = super(CommentsListCreateAPIView,
+                        self).get_serializer_context()
         context["request"].data.update({
             "slug": slug
         })
         return context
 
 
-class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
+class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
+                                  generics.CreateAPIView):
     lookup_url_kwarg = 'pk'
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -52,7 +54,8 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView, generic
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request, slug=None, pk=None):
-        context = super(CommentsCreateDeleteAPIView, self).get_serializer_context()
+        context = super(CommentsCreateDeleteAPIView,
+                        self).get_serializer_context()
         try:
             slug = self.kwargs.get('slug')
         except self.kwargs.get('slug').DoesNotExist:
@@ -65,7 +68,8 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView, generic
             context['request'].data['parent'] = Comment.objects.get(pk=pk).pk
         except Comment.DoesNotExist:
             raise NotFound('A comment with this ID does not exist.')
-        serializer = self.serializer_class(data=context['request'].data, context=context)
+        serializer = self.serializer_class(data=context['request'].data,
+                                           context=context)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

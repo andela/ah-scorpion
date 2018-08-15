@@ -20,7 +20,8 @@ def password_validator(password):
                                   r"(?=.*[a-z])(?!.*\s).*$")
     if not bool(password_pattern.match(password)):
         raise serializers.ValidationError(
-            "Password invalid, Password must be 8 characters long, include numbers and letters and have no spaces"
+            "Password invalid, Password must be 8 characters long, "
+            "include numbers and letters and have no spaces"
         )
     return password
 
