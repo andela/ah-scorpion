@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'django_extensions',
+    'django_filters',
     'rest_framework',
     'social_django',
     'authors.apps.authentication',
@@ -157,7 +158,8 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT':
         'json',
     'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.LimitOffsetPagination'
+        'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 EMAIL_USE_TLS = True
