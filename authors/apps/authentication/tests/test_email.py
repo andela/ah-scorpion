@@ -40,7 +40,6 @@ class TestPasswordReset(APITestCase):
 
     def test_invalid_email(self):
         """Test user who is not in the database"""
-        EMAIL = {"email": "fake@email.com"}
         response = self.client.post(
             reverse("authentication:reset-password"),
             self.EMAIL,

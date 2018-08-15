@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase, force_authenticate, \
     APIRequestFactory
 
 from authors.apps.articles.models import Article
-from authors.apps.articles.views import ArticleList, FavoriteArticle
+from authors.apps.articles.views import FavoriteArticle
 from authors.apps.authentication.models import User
 
 

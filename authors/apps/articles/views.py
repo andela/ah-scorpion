@@ -15,12 +15,14 @@ from .serializers import ArticleSerializer
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
-        slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
+        slug_text = context["request"].data.get("title",
+                                                "No Title") + " " \
+                    + uuid.uuid4().hex
         slug = slugify(slug_text)
         context["request"].data.update({
             "slug": slug
@@ -41,10 +43,14 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         except self.kwargs.get('slug').DoesNotExist:
             raise NotFound('Please check your url')
 
-        if context["request"].data.get("title", "No Title") == Article.objects.get(slug=url_slug).title:
+        if context["request"].data.get("title",
+                                       "No Title") == Article.objects \
+                .get(slug=url_slug).title:
             slug = url_slug
         else:
-            slug_text = context["request"].data.get("title", "No Title") + " " + uuid.uuid4().hex
+            slug_text = context["request"].data.get("title",
+                                                    "No Title") + " " \
+                        + uuid.uuid4().hex
             slug = slugify(slug_text)
         context["request"].data.update({
             "slug": slug
@@ -103,7 +109,8 @@ class DislikeArticle(generics.UpdateAPIView):
         user = request.user
 
         # removes the user from the list of liking users,
-        # nothing changes if the user does not exist in the list of liking users
+        # nothing changes if the user does not exist in the  list of liking
+        # users
         article.likes.remove(user.id)
 
         # allows for the None option: you neither like nor dislike the article
@@ -119,6 +126,7 @@ class DislikeArticle(generics.UpdateAPIView):
 
         response = {"Message": "You have successfully disliked this article"}
         return Response(response, status=status.HTTP_200_OK)
+
 
 class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     """
