@@ -72,7 +72,7 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
         context = super(ArticleDetail, self).get_serializer_context()
         try:
             url_slug = self.kwargs['slug']
-        except self.kwargs.get('slug').DoesNotExist:
+        except Exception:
             raise NotFound('Please check your url')
         if context["request"].data.get(
                 "title",
@@ -103,7 +103,7 @@ class LikeArticle(generics.UpdateAPIView):
 
         try:
             article = Article.objects.get(slug=slug)
-        except Article.DoesNotExist:
+        except Exception:
             raise NotFound('An article with this slug does not exist.')
 
         # removes the user from the list of disliking users,
@@ -143,7 +143,7 @@ class DislikeArticle(generics.UpdateAPIView):
 
         try:
             article = Article.objects.get(slug=slug)
-        except Article.DoesNotExist:
+        except Exception:
             raise NotFound('An article with this slug does not exist.')
 
         # removes the user from the list of liking users,
@@ -191,7 +191,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         """
         try:
             article = Article.objects.get(slug=slug)
-        except Article.DoesNotExist:
+        except Exception:
             response = {"message": "The article was not found", }
             return Response(response,
                             status=status.HTTP_404_NOT_FOUND)
@@ -226,7 +226,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
 
         try:
             article = Article.objects.get(slug=slug)
-        except Article.DoesNotExist:
+        except Exception:
             response = {"message": "The article was not found", }
             return Response(response,
                             status=status.HTTP_404_NOT_FOUND)
