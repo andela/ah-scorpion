@@ -285,9 +285,9 @@ class LikeDislikeTests(APITestCase):
         """Test liking a comment that does not exist."""
         view = LikeComment.as_view()
         request = self.request_factory.put(
-            self.likes_url, args=[self.slug, 20])
+            self.likes_url, args=[self.slug, 208888])
         force_authenticate(request, user=self.user)
-        response = view(request, slug=self.slug, pk=20)
+        response = view(request, slug=self.slug, pk=20777)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_dislike_unexisting_comment(self):
