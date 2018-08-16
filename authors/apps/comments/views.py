@@ -1,11 +1,11 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from ..comments.models import Comment
-from ..comments.serializers import CommentSerializer
+from ..comments.models import Comment, CommentHistory
+from ..comments.serializers import CommentSerializer, CommentHistorySerializer
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
@@ -89,6 +89,47 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def update(self, request, slug=None, pk=None):
+        """
+        Returns a list of comment change for a particular comment.
+        Comments are retrieved using the primary key
+        :param request:
+        :param slug:
+        :param pk:
+        :return: HTTP Response
+        :return: HTTP Code 200
+        """
+
+        try:
+            comment = Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
+            return Response(
+                {"message": "Comment not found"},
+                status=status.HTTP_404_NOT_FOUND)
+
+        context = super(CommentsCreateDeleteAPIView,
+                        self).get_serializer_context()
+        new_comment = context["request"].data['content']
+
+        initial_comment = comment.content
+
+        if initial_comment == new_comment:
+            return Response(
+                {"message": "New comment same as the existing. "
+                            "Editing rejected"},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        edited_comment = CommentHistory.objects.create(
+            comment=initial_comment,
+            parent_comment=comment)
+        edited_comment.save()
+
+        comment.content = new_comment
+        comment.save()
+
+        serializer = self.serializer_class(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class LikeComment(generics.UpdateAPIView):
     """
@@ -170,3 +211,31 @@ class DislikeComment(generics.UpdateAPIView):
 
         response = {"Message": "You have successfully disliked this comment"}
         return Response(response, status=status.HTTP_200_OK)
+
+
+class GetCommentHistory(generics.ListAPIView):
+    lookup_url_kwarg = 'pk'
+    serializer_class = CommentHistorySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Overrides the default GET request from ListAPIView
+        Returns all comment edits for a particular comment
+        :param request:
+        :param args:
+        :param kwargs:
+        :return: HTTP Code 200
+        :return: Response
+        # """
+
+        try:
+            comment = Comment.objects.get(pk=kwargs['pk'])
+        except Comment.DoesNotExist:
+            return Response(
+                {"message": "Comment not found"},
+                status=status.HTTP_404_NOT_FOUND)
+
+        self.queryset = CommentHistory.objects.filter(parent_comment=comment)
+
+        return generics.ListAPIView.list(self, request, *args, **kwargs)

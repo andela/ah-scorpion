@@ -15,6 +15,8 @@ urlpatterns = [
     path(
         '<int:pk>/dislike/', views.DislikeComment.as_view(),
         name='dislike_comment'),
+    path('history/<int:pk>/', views.GetCommentHistory.as_view(),
+         name='comment_history'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, PermissionDenied
-from ..comments.models import Comment
+from ..comments.models import Comment, CommentHistory
 from ..articles.models import Article
 from ..authentication.serializers import UserSerializer
 from ..articles.serializers import ArticleSerializer
@@ -44,3 +44,10 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_dislikes_count(self, instance):
         """Get the total number of dislikes for a particular comment."""
         return instance.dislikes.count()
+
+
+class CommentHistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CommentHistory
+        fields = '__all__'
