@@ -18,14 +18,14 @@ from .serializers import (LoginSerializer, ForgotPasswordSerializers,
 
 class RegistrationAPIView(generics.CreateAPIView):
     # Allow any user (authenticated or not) to hit this endpoint.
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = RegistrationSerializer
 
 
 class LoginAPIView(CreateModelMixin, generics.GenericAPIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -37,8 +37,8 @@ class LoginAPIView(CreateModelMixin, generics.GenericAPIView):
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    renderer_classes = (UserJSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+    renderer_classes = (UserJSONRenderer, )
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -64,8 +64,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = (EmailJSONRenderer,)
+    permission_classes = (AllowAny, )
+    renderer_classes = (EmailJSONRenderer, )
     serializer_class = ForgotPasswordSerializers
 
     def post(self, request, *args, **kwargs):
@@ -77,7 +77,7 @@ class ResetPasswordAPIView(CreateModelMixin, generics.GenericAPIView):
 
 
 class ConfirmResetPassword(generics.ListAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
     serializer_class = ForgotPasswordSerializers
 
     def list(self, request, token):
@@ -86,7 +86,7 @@ class ConfirmResetPassword(generics.ListAPIView):
 
 
 class ResetPasswordDoneAPIView(generics.UpdateAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
     serializer_class = ResetPasswordDoneSerializers
 
     def update(self, request):
@@ -100,20 +100,19 @@ class ResetPasswordDoneAPIView(generics.UpdateAPIView):
 
 class SocialAuth(generics.CreateAPIView):
     """
-    Allows for social signup and login using Google and Facebook
+    Allow for social signup and login using Google and Facebook.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
     serializer_class = SocialAuthSerializer
-    renderer_classes = (UserJSONRenderer,)
+    renderer_classes = (UserJSONRenderer, )
 
     def create(self, request):
         """
-        Receives the access_token and provider from the request,
-        once authentication is comlpete, it creates a new user record
-        if it does exist already. The user's information (username, email
+        Receive the access_token and provider from the request,
+        once authentication is comlpete, create a new user record if it
+        does not exist already. The user's information (username, email
         and image) are saved and the user is provided with a JWT token for
-        authorization when
-        using our API.
+        authorization when using our API.
         """
         # Get the access_token and provider from request
         # the access_token is provided by the particular provider
@@ -165,9 +164,9 @@ class SocialAuth(generics.CreateAPIView):
 
         def get_image_url(self):
             """
-            gets the user's current image url from the provider.
-            saves/updates the image field of the particular user
-            and returns the image_url
+            Get the user's current image url from the provider.
+            save/update the image field of the particular user
+            and returns the image_url.
             """
             try:
                 if provider == "google-oauth2":
@@ -193,9 +192,7 @@ class SocialAuth(generics.CreateAPIView):
             return image_url
 
         serializer = UserSerializer(user)
-        token = generate_token(serializer.data)
         output = serializer.data
-        output["token"] = token
         output['bio'] = serializer.instance.bio
         output['image'] = get_image_url(self)
         return Response(output, status=status.HTTP_200_OK)
