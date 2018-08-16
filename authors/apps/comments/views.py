@@ -87,6 +87,15 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, slug=None, pk=None):
+        """
+        Returns a list of comment change for a particular comment.
+        Comments are retrieved using the primary key
+        :param request:
+        :param slug:
+        :param pk:
+        :return: HTTP Response
+        :return: HTTP Code 200
+        """
 
         try:
             comment = Comment.objects.get(pk=pk)
@@ -213,7 +222,8 @@ class GetCommentHistory(generics.ListAPIView):
         :param request:
         :param args:
         :param kwargs:
-        :return:
+        :return: HTTP Code 200
+        :return: Response
         # """
 
         try:

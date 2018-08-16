@@ -13,7 +13,7 @@ from authors.apps.comments.views import CommentsCreateDeleteAPIView, \
 class CommentEditHistory(APITestCase):
     def setUp(self):
         """
-        Data for the tests
+        Set up data to be used for tests
         """
         self.title = "Be a python coder in three weeks without a hassle"
 
@@ -68,6 +68,12 @@ class CommentEditHistory(APITestCase):
         self.comment = comment.pk
 
     def test_update_comment_not_found(self):
+        """
+        Tests that HTTP Error 404 is returned when a user attempts to edit an
+        inexistent comment id.
+        Json message that comment not found should be returned
+        :return: None
+        """
         view = CommentsCreateDeleteAPIView.as_view()
 
         self.update_comment_url = reverse(self.update_comment_url,
@@ -83,6 +89,11 @@ class CommentEditHistory(APITestCase):
                          status.HTTP_404_NOT_FOUND)
 
     def test_comment_edited_successfully(self):
+        """
+        Checks is the new comment is returned as part of JSON response when
+        a user successfully updates their comment
+        :return: None
+        """
         view = CommentsCreateDeleteAPIView.as_view()
 
         self.update_comment_url = reverse(
@@ -101,6 +112,12 @@ class CommentEditHistory(APITestCase):
                          status.HTTP_200_OK)
 
     def test_duplicate_comment_rejected(self):
+        """
+        Tests if error 400 is returned when a user tries to edit a comment
+        but passes the same comment as new.
+        Message that the edit is rejected is returned
+        :return:
+        """
         view = CommentsCreateDeleteAPIView.as_view()
 
         self.update_comment_url = reverse(
@@ -127,6 +144,12 @@ class CommentEditHistory(APITestCase):
                          status.HTTP_400_BAD_REQUEST)
 
     def test_comment_not_found(self):
+        """
+        Tests that HTTP Error 404 is returned when a user tries to get
+        history for an  inexistent comment id.
+        Json message that comment not found should be returned
+        :return: None
+        """
         view = GetCommentHistory.as_view()
 
         self.get_comment_history_url = reverse(
@@ -143,6 +166,12 @@ class CommentEditHistory(APITestCase):
                          status.HTTP_404_NOT_FOUND)
 
     def test_comment_history(self):
+        """
+        Tests if the old comment id and content is returned
+        when user gets edit history of a comment
+        HTTP Code 200 should be returned
+        :return: None
+        """
         # Create a comment
         view = CommentsCreateDeleteAPIView.as_view()
         self.update_comment_url = reverse(
