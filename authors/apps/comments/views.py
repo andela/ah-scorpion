@@ -1,9 +1,8 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, \
-    IsAuthenticatedOrReadOnly
-from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from ..comments.models import Comment, CommentHistory
 from ..comments.serializers import CommentSerializer, CommentHistorySerializer
