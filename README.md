@@ -345,7 +345,7 @@ Offset/skip number of articles (default is 0):
 
 Authentication optional, will return multiple articles, ordered by most recent first
 
-### Feed Articles
+### Feed Articles [Not Yet Implemented]
 
 `GET /api/v1/articles/feed`
 
@@ -526,6 +526,42 @@ doing the same for a second time returns:
 `DELETE /api/v1/articles/:slug/comments/:id`
 
 Authentication required
+
+### Edit Comment
+
+`PUT /api/v1/articles/:slug/comments/:id`
+
+Authentication required
+Returns comment
+Example Request Body:
+```
+{
+  "content": "This is an edit to the original comment"
+}
+```
+
+### Get comment edit history
+
+`GET /api/v1/articles/:slug/comments/history/:id/`
+Authentication required
+No request params
+Return body example:
+```
+[
+    {
+        "id": 3,
+        "comment": "This is the original comment",
+        "date_created": "2018-08-16T11:22:44.750507Z",
+        "parent_comment": 1
+    },
+    {
+        "id": 4,
+        "comment": "This is the comment after first edit",
+        "date_created": "2018-08-16T11:23:58.468756Z",
+        "parent_comment": 1
+    }
+]
+```
 
 ### Favorite Article
 
