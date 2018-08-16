@@ -28,14 +28,15 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
         return queryset.filter(**filters)
 
     def get_serializer_context(self):
-        """
-        Interceptes request data and modifies it before
-        passing it to the serialzer.
-        """
-        slug = self.kwargs['slug']
+        try:
+            slug = self.kwargs['slug']
+        except Exception:
+            raise NotFound('Please check your url, slug is missing')
         context = super(CommentsListCreateAPIView,
                         self).get_serializer_context()
-        context["request"].data.update({"slug": slug})
+        context["request"].data.update({
+            "slug": slug
+        })
         return context
 
 
@@ -54,12 +55,12 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         """Handle deleting a comment."""
         try:
             pk = self.kwargs.get('pk')
-        except self.kwargs.get('pk').DoesNotExist:
-            raise NotFound('Please check your url')
+        except Exception:
+            raise NotFound('Please check your url, pk is missing')
 
         try:
             comment = Comment.objects.get(pk=pk)
-        except Comment.DoesNotExist:
+        except Exception:
             raise NotFound('A comment with this id does not exist.')
 
         comment.delete()
@@ -72,13 +73,15 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
                         self).get_serializer_context()
         try:
             slug = self.kwargs.get('slug')
-        except self.kwargs.get('slug').DoesNotExist:
-            raise NotFound('Please check your url')
-        context["request"].data.update({"slug": slug})
+        except Exception:
+            raise NotFound('Please check your url, slug is missing')
+        context["request"].data.update({
+            "slug": slug
+        })
         try:
             # getting the parent comment that will be the head of the thread
             context['request'].data['parent'] = Comment.objects.get(pk=pk).pk
-        except Comment.DoesNotExist:
+        except Exception:
             raise NotFound('A comment with this ID does not exist.')
         serializer = self.serializer_class(
             data=context['request'].data, context=context)

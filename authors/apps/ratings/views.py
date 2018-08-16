@@ -1,7 +1,6 @@
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-
 from authors.apps.articles.models import Article
 from authors.apps.ratings.renderers import RatingsRenderer
 from authors.apps.ratings.serializers import RatingsSerializer
@@ -28,10 +27,11 @@ class RatingsRetrieveAPIView(ListCreateAPIView):
         :return: context
         """
         context = super().get_serializer_context()
+
         try:
             context['article'] = self.get_article(
                 slug=self.request.parser_context['kwargs']['slug'])
-        except Article.DoesNotExist:
+        except Exception:
             context['article'] = None
         return context
 
@@ -49,6 +49,6 @@ class RatingsRetrieveAPIView(ListCreateAPIView):
             article = self.get_article(kwargs['slug'])
             self.queryset = article.ratings.all()
             return super().list(request, *args, **kwargs)
-        except Article.DoesNotExist:
+        except Exception:
             output = dict(errors='Article not found')
             return Response(output, 404)

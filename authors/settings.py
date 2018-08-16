@@ -23,6 +23,8 @@ SECRET_KEY = os.environ['SCORPION_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGIN_URL = "/api/v1/users/login/"
+
 ALLOWED_HOSTS = []
 
 # Application definition
@@ -46,7 +48,42 @@ INSTALLED_APPS = [
     'authors.apps.profiles',
     'authors.apps.ratings',
     'rest_framework_swagger',
+    'rest_framework.authtoken',
 ]
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER':
+    'authors.apps.core.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY':
+    'error',
+    'DEFAULT_PERMISSION_CLASSES':
+    ('rest_framework.permissions.IsAuthenticated', ),
+    'DEFAULT_AUTHENTICATION_CLASSES':
+    ('rest_framework.authentication.BasicAuthentication',
+        'authors.apps.authentication.backends.JWTAuthentication'),
+    'TEST_REQUEST_DEFAULT_FORMAT':
+    'json',
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.LimitOffsetPagination',
+}
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'api_version': '0.1',
+    'enabled_methods': [
+        'get',
+        'put',
+        'delete',
+        'post',
+    ],
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -146,23 +183,6 @@ CORS_ORIGIN_WHITELIST = (
 # the `authentication` module. This module is registered above in a setting
 # called `INSTALLED_APPS`.
 AUTH_USER_MODEL = 'authentication.User'
-
-REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER':
-        'authors.apps.core.exceptions.core_exception_handler',
-    'NON_FIELD_ERRORS_KEY':
-        'error',
-    'DEFAULT_PERMISSION_CLASSES':
-        ('rest_framework.permissions.IsAuthenticated',),
-    'DEFAULT_AUTHENTICATION_CLASSES':
-        ('authors.apps.authentication.backends.JWTAuthentication',),
-    'TEST_REQUEST_DEFAULT_FORMAT':
-        'json',
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_FILTER_BACKENDS':
-        ('django_filters.rest_framework.DjangoFilterBackend',)
-}
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ['SCORPION_EMAIL_SMTP_HOST']
