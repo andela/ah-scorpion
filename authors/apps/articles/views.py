@@ -21,11 +21,11 @@ class ArticleFilter(filters.FilterSet):
     for getting dynamic queries from the url
     """
     title = filters.CharFilter(field_name='title', lookup_expr='icontains')
-    description = filters.CharFilter(field_name='description',
-                                     lookup_expr='icontains')
+    description = filters.CharFilter(
+        field_name='description', lookup_expr='icontains')
     body = filters.CharFilter(field_name='body', lookup_expr='icontains')
-    author__username = filters.CharFilter(field_name='author__username',
-                                          lookup_expr='icontains')
+    author__username = filters.CharFilter(
+        field_name='author__username', lookup_expr='icontains')
 
     class Meta:
         """
@@ -33,14 +33,14 @@ class ArticleFilter(filters.FilterSet):
         The ArrayField has also been over-ridden
         """
         model = Article
-        fields = ['title', 'description', 'body', 'author__username',
-                  'tagList']
+        fields = [
+            'title', 'description', 'body', 'author__username', 'tagList'
+        ]
         filter_overrides = {
             ArrayField: {
                 'filter_class': django_filters.CharFilter,
                 'extra': lambda f: {
-                    'lookup_expr': 'icontains',
-                },
+                    'lookup_expr': 'icontains', },
             },
         }
 
@@ -48,13 +48,16 @@ class ArticleFilter(filters.FilterSet):
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, )
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, )
     filterset_class = ArticleFilter
 
     def get_serializer_context(self):
         context = super(ArticleList, self).get_serializer_context()
+        request = context["request"]
+        if not request:
+            return context
         slug_text = context["request"].data.get(
             "title", "No Title") + " " + uuid.uuid4().hex
         slug = slugify(slug_text)
@@ -175,7 +178,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     Else: The use no longer favourites the article
     """
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
@@ -192,9 +195,10 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         try:
             article = Article.objects.get(slug=slug)
         except Exception:
-            response = {"message": "The article was not found", }
-            return Response(response,
-                            status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "message": "The article was not found",
+            }
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
         user = request.user
 
         if user in article.favorited.all():
@@ -202,7 +206,8 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
 
             response = {
                 "message": "You have already marked "
-                           "this article as a favourite"}
+                "this article as a favourite"
+            }
             return Response(response, status=status.HTTP_200_OK)
 
         else:
@@ -227,9 +232,10 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         try:
             article = Article.objects.get(slug=slug)
         except Exception:
-            response = {"message": "The article was not found", }
-            return Response(response,
-                            status=status.HTTP_404_NOT_FOUND)
+            response = {
+                "message": "The article was not found",
+            }
+            return Response(response, status=status.HTTP_404_NOT_FOUND)
         user = request.user
 
         if user in article.favorited.all():
@@ -242,5 +248,6 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         else:
             # Returns a message that the user has already favourited article
             response = {
-                "message": "You have not marked this article as a favourite"}
+                "message": "You have not marked this article as a favourite"
+            }
             return Response(response, status=status.HTTP_200_OK)

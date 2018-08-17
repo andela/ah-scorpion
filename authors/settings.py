@@ -25,11 +25,7 @@ DEBUG = os.environ['SCORPION_DEBUG']
 
 LOGIN_URL = "/api/v1/users/login/"
 
-ALLOWED_HOSTS = [
-    "authors-haven-api.herokuapp.com",
-    "127.0.0.1",
-    "localhost"
-]
+ALLOWED_HOSTS = ["authors-haven-api.herokuapp.com", "127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -61,10 +57,11 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':
     'error',
     'DEFAULT_PERMISSION_CLASSES':
-    ('rest_framework.permissions.IsAuthenticated', ),
+    ('rest_framework.permissions.IsAuthenticated',
+     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+     'rest_framework.permissions.AllowAny'),
     'DEFAULT_AUTHENTICATION_CLASSES':
-    ('rest_framework.authentication.BasicAuthentication',
-        'authors.apps.authentication.backends.JWTAuthentication'),
+    ('authors.apps.authentication.backends.JWTAuthentication', ),
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json',
     'DEFAULT_PAGINATION_CLASS':
@@ -143,8 +140,8 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':
-            'django.contrib.auth.password_validation'
-            '.UserAttributeSimilarityValidator',
+        'django.contrib.auth.password_validation'
+        '.UserAttributeSimilarityValidator',
     },
     {
         'NAME':
@@ -180,18 +177,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
 CORS_ORIGIN_WHITELIST = (
     '0.0.0.0:4000',
     'localhost:4000',
+    'localhost:3000',
 )
 
 # Tell Django about the custom `User` model we created. The string
