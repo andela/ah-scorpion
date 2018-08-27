@@ -123,6 +123,7 @@ class CommentsTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug='not')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "Not found.")
 
     def test_get_comments_successful(self):
         """Test that a user can get comments successfully."""
