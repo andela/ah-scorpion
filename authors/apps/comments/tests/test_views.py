@@ -104,6 +104,8 @@ class CommentsTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"],
+                         "A comment with this ID does not exist.")
 
     def test_comment_without_article(self):
         """Test that a user can't comment on a non-existent article."""
@@ -114,6 +116,7 @@ class CommentsTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug='1234what')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "Not found.")
 
     def test_get_comment_from_article_without_comment(self):
         """Test that a user can't get comment an article without comment."""
@@ -149,6 +152,8 @@ class CommentsTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug=self.slug, pk="5463")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"],
+                         "A comment with this ID does not exist.")
 
     def test_delete_comment_successful(self):
         """Test that a user can delete comment."""
@@ -290,6 +295,8 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=20777)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"],
+                         "A comment with this ID does not exist.")
 
     def test_dislike_unexisting_comment(self):
         """Test disliking a comment that does not exist."""
@@ -299,3 +306,5 @@ class LikeDislikeTests(APITestCase):
         force_authenticate(request, user=self.user)
         response = view(request, slug=self.slug, pk=10)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"],
+                         "A comment with this ID does not exist.")

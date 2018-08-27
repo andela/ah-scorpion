@@ -65,7 +65,7 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         try:
             comment = Comment.objects.get(pk=pk)
         except Exception:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         comment.delete()
 
@@ -153,7 +153,7 @@ class LikeComment(generics.UpdateAPIView):
         try:
             comment = Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         # removes the user from the list of disliking users,
         # nothing changes if the user does not exist in
@@ -194,7 +194,7 @@ class DislikeComment(generics.UpdateAPIView):
         try:
             comment = Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         # removes the user from the list of liking users,
         # nothing changes if the user does not exist

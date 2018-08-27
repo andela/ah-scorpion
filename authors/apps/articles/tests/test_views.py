@@ -69,6 +69,7 @@ class ArticleTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, slug="not-found")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "Not found.")
 
     def test_update_non_existent(self):
         """
@@ -81,6 +82,7 @@ class ArticleTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, slug="not-found")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "Not found.")
 
     def test_update_article_successful(self):
         """
