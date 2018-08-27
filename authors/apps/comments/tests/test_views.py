@@ -122,7 +122,7 @@ class CommentsTests(APITestCase):
         request = self.request_factory.get(url)
         force_authenticate(request, user=self.user)
         response = comment_view(request, slug='not')
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_comments_successful(self):
         """Test that a user can get comments successfully."""

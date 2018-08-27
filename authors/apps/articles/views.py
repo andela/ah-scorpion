@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
     IsAuthenticated
 from rest_framework.response import Response
 
+
 from .models import Article
 from .serializers import ArticleSerializer
 
@@ -59,7 +60,7 @@ class ArticleList(generics.ListCreateAPIView):
         if not request:
             return context
         slug_text = context["request"].data.get(
-            "title", "No Title") + " " + uuid.uuid4().hex
+            "title", "") + " " + uuid.uuid4().hex
         slug = slugify(slug_text)
         context["request"].data.update({"slug": slug})
         return context
@@ -77,13 +78,12 @@ class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
             url_slug = self.kwargs['slug']
         except Exception:
             raise NotFound('Please check your url')
-        if context["request"].data.get(
-                "title",
-                "No Title") == Article.objects.get(slug=url_slug).title:
+        request_title = context["request"].data.get("title", "")
+        if request_title == Article.objects.get(slug=url_slug).title or \
+                request_title == "":
             slug = url_slug
         else:
-            slug_text = context["request"].data.get(
-                "title", "No Title") + " " + uuid.uuid4().hex
+            slug_text = request_title + " " + uuid.uuid4().hex
             slug = slugify(slug_text)
         context["request"].data.update({"slug": slug})
         return context
