@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from authors.apps.core.e_mail import SendEmail
-from authors.settings import EMAIL_HOST_NAME
+from authors.settings import EMAIL_HOST_NAME, RESET_DOMAIN
 from .models import User
 
 
@@ -222,7 +222,7 @@ class ForgotPasswordSerializers(serializers.Serializer):
             template='reset_password.html',
             content={
                 'user': data.get("email", None),
-                'domain': get_current_site(self.context['request']).domain,
+                'domain': RESET_DOMAIN,
                 'token': token,
             })
         email.send()
