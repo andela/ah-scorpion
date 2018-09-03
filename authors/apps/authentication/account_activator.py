@@ -1,6 +1,5 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
 from rest_framework.exceptions import AuthenticationFailed
 
 from authors.apps.authentication.backends import JWTAuthentication
