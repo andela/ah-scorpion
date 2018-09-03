@@ -1,7 +1,10 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
+from django.urls import reverse
 from rest_framework.exceptions import AuthenticationFailed
 
 from authors.apps.authentication.backends import JWTAuthentication
+from authors.settings import FRONT_END_HOST_NAME
 
 
 def activate(request, token):
@@ -20,9 +23,10 @@ def activate(request, token):
 
         user.is_active = True
         user.save()
-        return HttpResponse(
-            'Thank you for confirming your email address. '
-            'Welcome to Authors\' Haven.')
+        front_end_host = FRONT_END_HOST_NAME
+        front_end_host = front_end_host + "/login"
+        return redirect(front_end_host)
+
     # User is not found
     else:
         return HttpResponse(status=401, content='Activation link is invalid!')

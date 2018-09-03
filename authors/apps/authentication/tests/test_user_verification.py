@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from authors import settings
 from authors.apps.core.token import generate_token
 
 
@@ -67,9 +68,10 @@ class AuthenticationTests(APITestCase):
 
         self.activate_url = reverse(self.activate_url, kwargs={'token': token})
         response = self.client.get(self.activate_url)
-        assert ("Thank you for confirming your email address" in str(
-            response._container))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        assert (settings.FRONT_END_HOST_NAME+"/login" in str(
+            response._headers['location']))
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
     def test_used_token(self):
         """
