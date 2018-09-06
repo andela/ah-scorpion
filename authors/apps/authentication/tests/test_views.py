@@ -62,7 +62,7 @@ class AuthenticationTests(APITestCase):
         response = self.client.post(self.reg_url, self.data, format='json')
         self.assertEqual(
             response.data['errors']['password'][0],
-            "Password invalid, Password must be 8 characters long,"
+            "Password invalid. Password must be 8 characters long,"
             " include numbers and letters and have no spaces")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

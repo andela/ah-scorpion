@@ -187,6 +187,8 @@ CORS_ORIGIN_WHITELIST = (
     '0.0.0.0:4000',
     'localhost:4000',
     'localhost:3000',
+    'https://authors-haven-dev.herokuapp.com/'
+    'https://authors-haven-frontend.herokuapp.com/'
 )
 
 # Tell Django about the custom `User` model we created. The string
@@ -232,4 +234,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'username']
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ["SCORPION_GOOGLE_KEY"]
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ["SCORPION_GOOGLE_SECRET"]
 
-RESET_DOMAIN = 'localhost:3000'
+FRONT_END_HOST_NAME = os.environ["SCORPION_FRONT_END_HOST"]
+
+RESET_DOMAIN = os.environ["SCORPION_FRONT_END_HOST"]
