@@ -21,11 +21,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SCORPION_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['SCORPION_DEBUG']
 
 LOGIN_URL = "/api/v1/users/login/"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["authors-haven-api.herokuapp.com", "127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -57,10 +57,11 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':
     'error',
     'DEFAULT_PERMISSION_CLASSES':
-    ('rest_framework.permissions.IsAuthenticated', ),
+    ('rest_framework.permissions.IsAuthenticated',
+     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+     'rest_framework.permissions.AllowAny'),
     'DEFAULT_AUTHENTICATION_CLASSES':
-    ('rest_framework.authentication.BasicAuthentication',
-        'authors.apps.authentication.backends.JWTAuthentication'),
+    ('authors.apps.authentication.backends.JWTAuthentication', ),
     'TEST_REQUEST_DEFAULT_FORMAT':
     'json',
     'DEFAULT_PAGINATION_CLASS':
@@ -94,6 +95,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'authors.urls'
@@ -138,8 +140,8 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME':
-            'django.contrib.auth.password_validation'
-            '.UserAttributeSimilarityValidator',
+        'django.contrib.auth.password_validation'
+        '.UserAttributeSimilarityValidator',
     },
     {
         'NAME':
@@ -172,10 +174,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ORIGIN_WHITELIST = (
     '0.0.0.0:4000',
     'localhost:4000',
+    'localhost:3000',
 )
 
 # Tell Django about the custom `User` model we created. The string
@@ -220,3 +231,5 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'username']
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ["SCORPION_GOOGLE_KEY"]
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ["SCORPION_GOOGLE_SECRET"]
+
+RESET_DOMAIN = 'localhost:3000'

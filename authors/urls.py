@@ -22,16 +22,19 @@ from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title="Author's Haven")
 
+schema_view.view_initkwargs['permission_classes'].clear()
+
 urlpatterns = [
     url(r'^$', schema_view),
     path('admin/', admin.site.urls),
-    path('api/v1/articles/', include('authors.apps.articles.urls',
-                                     namespace='articles')),
+    path('api/v1/articles/',
+         include('authors.apps.articles.urls', namespace='articles')),
     path('api/v1/articles/<str:slug>/comments/',
-         include('authors.apps.comments.urls',
-                 namespace='comments')),
-    path('api/v1/', include('authors.apps.authentication.urls',
-                            namespace='authentication')),
-    path('api/v1/profiles/', include('authors.apps.profiles.urls',
-                                     namespace='profiles')),
+         include('authors.apps.comments.urls', namespace='comments')),
+    path(
+        'api/v1/',
+        include(
+            'authors.apps.authentication.urls', namespace='authentication')),
+    path('api/v1/profiles/',
+         include('authors.apps.profiles.urls', namespace='profiles')),
 ]

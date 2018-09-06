@@ -99,4 +99,9 @@ db.sqlite3
 
 #vscode
 .vscode
+
+# add code to manage database
 .db
+
+# Django Static files
+staticfiles/
