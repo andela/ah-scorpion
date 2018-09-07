@@ -245,7 +245,7 @@ class ResetPasswordDoneSerializers(serializers.Serializer):
 
         if is_valid_token is not True:
             raise serializers.ValidationError(
-                "Invalid token or Activation expired")
+                "Invalid credentials or Activation expired")
 
         user.set_password(data.get('new_password', None))
         user.save()
