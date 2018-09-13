@@ -14,8 +14,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
     dislikes = serializers.SerializerMethodField(
         method_name='get_dislikes_count')
-    # favorited = serializers.SerializerMethodField(
-    #     method_name='get_favorite_count')
+
 
     class Meta:
         model = Article
@@ -86,5 +85,4 @@ class ArticleSerializer(serializers.ModelSerializer):
         Gets the number of times that a particular article has been
         favourited
         """
-        print("HJBJHASBDHJBDJBJ", instance.favorited)
-        return instance.favorited
+        return instance.favorited.count()

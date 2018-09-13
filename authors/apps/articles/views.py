@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
     IsAuthenticated
 from rest_framework.response import Response
 
+from authors.apps.authentication.models import User
 from .models import Article
 from .serializers import ArticleSerializer
 
@@ -216,7 +217,15 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             article.favorited.add(user.id)
 
             serializer = self.get_serializer(article)
-            response = {"article": serializer.data}
+
+            favorited_users = []
+            for user_id in serializer.data['favorited']:
+                username = User.objects.get(id=user_id).email
+                favorited_users.append(username)
+
+            output = serializer.data
+            output['favoriting_users']= favorited_users
+            response = {"article": output}
             return Response(response, status=status.HTTP_200_OK)
 
     def delete(self, request, slug):
