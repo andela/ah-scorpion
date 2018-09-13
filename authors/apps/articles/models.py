@@ -24,9 +24,6 @@ class Article(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                db_column='author')
 
-    favorited = models.ManyToManyField(User, related_name='favorited',
-                                       blank=True)
-
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     dislikes = models.ManyToManyField(
         User, related_name='dislikes', blank=True)

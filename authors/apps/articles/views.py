@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
     IsAuthenticated
 from rest_framework.response import Response
 
+from authors.apps.authentication.models import User
 from .models import Article
 from .serializers import ArticleSerializer
 
@@ -48,9 +49,9 @@ class ArticleFilter(filters.FilterSet):
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ArticleFilter
 
     def get_serializer_context(self):
@@ -68,7 +69,7 @@ class ArticleList(generics.ListCreateAPIView):
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
 
     def get_serializer_context(self):
@@ -98,7 +99,7 @@ class LikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         """Update the user's liking status on a particular article."""
@@ -138,7 +139,7 @@ class DislikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         """Update the user's disliking status on a particular article."""
@@ -178,7 +179,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     Else: The use no longer favourites the article
     """
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
@@ -202,12 +203,13 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         user = request.user
 
         if user in article.favorited.all():
-            # Returns a message that the user has already favourited article
+            # Remove the user from the list of the ones that have favourited
+            #  article
 
-            response = {
-                "message": "You have already marked "
-                "this article as a favourite"
-            }
+            article.favorited.remove(user.id)
+
+            serializer = self.get_serializer(article)
+            response = {"article": serializer.data}
             return Response(response, status=status.HTTP_200_OK)
 
         else:
@@ -215,7 +217,15 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
             article.favorited.add(user.id)
 
             serializer = self.get_serializer(article)
-            response = {"article": serializer.data}
+
+            favorited_users = []
+            for user_id in serializer.data['favorited']:
+                username = User.objects.get(id=user_id).email
+                favorited_users.append(username)
+
+            output = serializer.data
+            output['favoriting_users'] = favorited_users
+            response = {"article": output}
             return Response(response, status=status.HTTP_200_OK)
 
     def delete(self, request, slug):

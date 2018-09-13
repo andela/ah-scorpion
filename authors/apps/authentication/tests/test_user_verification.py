@@ -69,6 +69,8 @@ class AuthenticationTests(APITestCase):
         self.activate_url = reverse(self.activate_url, kwargs={'token': token})
         response = self.client.get(self.activate_url)
 
+        print(response._headers)
+
         assert (settings.FRONT_END_HOST_NAME+"/login" in str(
             response._headers['location']))
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
