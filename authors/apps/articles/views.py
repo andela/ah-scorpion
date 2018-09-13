@@ -49,9 +49,9 @@ class ArticleFilter(filters.FilterSet):
 class ArticleList(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (filters.DjangoFilterBackend, )
+    filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ArticleFilter
 
     def get_serializer_context(self):
@@ -69,7 +69,7 @@ class ArticleList(generics.ListCreateAPIView):
 class ArticleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
 
     def get_serializer_context(self):
@@ -99,7 +99,7 @@ class LikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         """Update the user's liking status on a particular article."""
@@ -139,7 +139,7 @@ class DislikeArticle(generics.UpdateAPIView):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, slug):
         """Update the user's disliking status on a particular article."""
@@ -179,7 +179,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
     Else: The use no longer favourites the article
     """
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
@@ -224,7 +224,7 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
                 favorited_users.append(username)
 
             output = serializer.data
-            output['favoriting_users']= favorited_users
+            output['favoriting_users'] = favorited_users
             response = {"article": output}
             return Response(response, status=status.HTTP_200_OK)
 

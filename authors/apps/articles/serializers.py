@@ -15,7 +15,6 @@ class ArticleSerializer(serializers.ModelSerializer):
     dislikes = serializers.SerializerMethodField(
         method_name='get_dislikes_count')
 
-
     class Meta:
         model = Article
         fields = '__all__'
@@ -53,7 +52,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             return None
         else:
             weighted_total = (5 * fives) + (4 * fours) + (3 * threes) + (
-                        2 * twos) + (1 * ones)
+                    2 * twos) + (1 * ones)
             weighted_average = weighted_total / all_ratings
             return round(weighted_average, 2)
 
