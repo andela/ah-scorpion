@@ -202,12 +202,13 @@ class FavoriteArticle(generics.ListCreateAPIView, generics.DestroyAPIView):
         user = request.user
 
         if user in article.favorited.all():
-            # Returns a message that the user has already favourited article
+            # Remove the user from the list of the ones that have favourited
+            #  article
 
-            response = {
-                "message": "You have already marked "
-                "this article as a favourite"
-            }
+            article.favorited.remove(user.id)
+
+            serializer = self.get_serializer(article)
+            response = {"article": serializer.data}
             return Response(response, status=status.HTTP_200_OK)
 
         else:

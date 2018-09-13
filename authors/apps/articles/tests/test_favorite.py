@@ -86,8 +86,8 @@ class AuthenticationTests(APITestCase):
 
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK)
-        assert ("You have already marked this article as a favourite" in
-                str(response.data))
+        assert ("'title': 'Be a python coder in three weeks without a "
+                "hassle'" and "'favorited': 0" in str(response.data))
 
     def test_un_favourite(self):
         user = User.objects.get(email="musamo@live.com")
