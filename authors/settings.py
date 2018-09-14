@@ -183,13 +183,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-CORS_ORIGIN_WHITELIST = (
-    '0.0.0.0:4000',
-    'localhost:4000',
-    'localhost:3000',
-    'https://authors-haven-dev.herokuapp.com/'
-    'https://authors-haven-frontend.herokuapp.com/'
-)
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Tell Django about the custom `User` model we created. The string
 # `authentication.User` tells Django we are referring to the `User` model in
