@@ -17,17 +17,6 @@ def password_validator(password):
     if not bool(password_pattern.match(password)):
         raise serializers.ValidationError(
             "Password invalid. Password must be 8 characters long, "
-            "include numbers and letters and have no spaces"
-        )
-    return password
-
-
-def password_validator(password):
-    password_pattern = re.compile(r"(?=^.{8,80}$)(?=.*\d)"
-                                  r"(?=.*[a-z])(?!.*\s).*$")
-    if not bool(password_pattern.match(password)):
-        raise serializers.ValidationError(
-            "Password invalid. Password must be 8 characters long, "
             "include numbers and letters and have no spaces")
     return password
 
@@ -68,7 +57,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'username', 'password', 'bio', 'image']
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
@@ -223,7 +212,7 @@ class ForgotPasswordSerializers(serializers.Serializer):
             template='reset_password.html',
             content={
                 'user': data.get("email", None),
-                'domain': RESET_DOMAIN,
+                'domain': get_current_site(self.context['request']).domain,
                 'token': token,
             })
         email.send()

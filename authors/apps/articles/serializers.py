@@ -5,10 +5,10 @@ from ..authentication.serializers import UserSerializer
 
 
 class ArticleSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(
-        required=True,
-        max_length=100,
-    )
+    # title = serializers.CharField(
+    #     required=True,
+    #     max_length=100,
+    # )
     author = UserSerializer(read_only=True)
 
     likes = serializers.SerializerMethodField(method_name='get_likes_count')

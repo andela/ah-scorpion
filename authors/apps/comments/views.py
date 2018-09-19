@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -6,6 +8,7 @@ from rest_framework.response import Response
 
 from ..comments.models import Comment, CommentHistory
 from ..comments.serializers import CommentSerializer, CommentHistorySerializer
+from ..articles.models import Article
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
@@ -32,6 +35,7 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
             slug = self.kwargs['slug']
         except Exception:
             raise NotFound('Please check your url, slug is missing')
+        get_object_or_404(Article, slug=slug)
         context = super(CommentsListCreateAPIView,
                         self).get_serializer_context()
         context["request"].data.update({
@@ -61,7 +65,7 @@ class CommentsCreateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView,
         try:
             comment = Comment.objects.get(pk=pk)
         except Exception:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         comment.delete()
 
@@ -149,7 +153,7 @@ class LikeComment(generics.UpdateAPIView):
         try:
             comment = Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         # removes the user from the list of disliking users,
         # nothing changes if the user does not exist in
@@ -190,7 +194,7 @@ class DislikeComment(generics.UpdateAPIView):
         try:
             comment = Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
-            raise NotFound('A comment with this id does not exist.')
+            raise NotFound('A comment with this ID does not exist.')
 
         # removes the user from the list of liking users,
         # nothing changes if the user does not exist
