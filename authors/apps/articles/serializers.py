@@ -14,8 +14,6 @@ class ArticleSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(method_name='get_likes_count')
     dislikes = serializers.SerializerMethodField(
         method_name='get_dislikes_count')
-    favorited = serializers.SerializerMethodField(
-        method_name='get_favorite_count')
 
     class Meta:
         model = Article
@@ -54,7 +52,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             return None
         else:
             weighted_total = (5 * fives) + (4 * fours) + (3 * threes) + (
-                        2 * twos) + (1 * ones)
+                    2 * twos) + (1 * ones)
             weighted_average = weighted_total / all_ratings
             return round(weighted_average, 2)
 
