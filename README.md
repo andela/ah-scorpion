@@ -54,7 +54,7 @@ The preferred JSON object to be returned by the API should be structured as foll
     "dislikes": 1,
     "slug": "how-to-train-your-dragon",
     "description": "Ever wonder how?",
-    "body": "It takes a Jacobian",
+    "body": {title:"How to train your dragon", description: "Ever wonder how?", body:"some text"},
     "tagList": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
@@ -369,7 +369,8 @@ Example request body:
 {
     "title": "How to train your dragon",
     "description": "Ever wonder how?",
-    "body": "You have to believe",
+    "body": {title: "How to train your dragon",
+    description: "Ever wonder how?",body:"You have to believe"},
     "tagList": ["reactjs", "angularjs", "dragons"],
     "images" : ["imagelink1", imagelink2]
 }
